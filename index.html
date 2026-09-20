@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Logístico Integrado</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-body: #0a0a0a;
+      --bg-card: #161616;
+      --primary: #FFE600;
+      --primary-hover: #e6cf00;
+      --text-main: #ffffff;
+      --text-dim: #aaaaaa;
+      --border: #333333;
+      --input-bg: #000000;
+      --danger: #ff4444;
+      --success: #00C851;
+    }
+    
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { margin: 0; background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-body); }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* NAVBAR INTEGRADA */
+    nav { background: #000; border-bottom: 3px solid var(--primary); position: sticky; top: 0; z-index: 100; padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+    .nav-logo { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nav-btn { background: transparent; color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; text-transform: uppercase; }
+    .nav-btn:hover { background: rgba(255, 230, 0, 0.1); border-color: var(--primary); color: var(--primary); }
+    .nav-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+    .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; width: 100%; display: none; }
+    .container.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ELEMENTOS GLOBAIS */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    h2 { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 0; display: inline-block; font-size: 20px; }
+    label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+    input, select, textarea { width: 100%; background: var(--input-bg); border: 2px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text-main); font-size: 14px; margin-bottom: 15px; outline: none; transition: 0.3s; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 230, 0, 0.15); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+    
+    .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; text-transform: uppercase; transition: 0.3s; }
+    .btn-submit { background: var(--primary); color: #000; width: 100%; padding: 16px; font-size: 15px; box-shadow: 0 4px 10px rgba(255, 230, 0, 0.2); }
+    .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: var(--text-main); border: 2px dashed var(--border); width: 100%; padding: 14px; }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger { background: #220000; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+
+    /* DOCAS STYLES */
+    .docas-layout { display: flex; gap: 20px; flex-wrap: wrap; }
+    .docas-dashboard { flex: 3; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+    .doca-card { background: var(--bg-card); padding: 20px; border-radius: 10px; border: 1px solid var(--border); border-left: 6px solid var(--primary); display: flex; flex-direction: column; gap: 10px; }
+    .doca-status { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; border: 1px solid transparent; }
+    .st-disp { background: rgba(0,200,81,0.1); color: var(--success); border-color: var(--success); }
+    .st-uso { background: rgba(255,230,0,0.1); color: var(--primary); border-color: var(--primary); }
+    .st-indisp { background: rgba(255,68,68,0.1); color: var(--danger); border-color: var(--danger); }
+    
+    .docas-sidebar { flex: 1; min-width: 250px; background: var(--bg-card); border-radius: 10px; padding: 20px; border: 1px solid var(--border); max-height: 80vh; overflow-y: auto; position: sticky; top: 90px; }
+    .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border); }
+    
+    /* BUFFER STYLES */
+    ul#lista-itens { background: var(--input-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); list-style: none; margin: 0 0 20px 0; }
+    ul#lista-itens li { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 10px; margin-bottom: 8px; border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 6px; font-size: 13px; }
+    
+    .req-card { background: var(--bg-card); border-radius: 10px; padding: 20px; cursor: pointer; border: 1px solid var(--border); border-left: 6px solid var(--primary); transition: 0.3s; }
+    .req-card:hover { transform: translateY(-3px); border-color: #666; }
+    .req-card.concluido { opacity: 0.5; border-left-color: #555; }
+    .req-tags { display: flex; gap: 8px; margin-bottom: 10px;}
+    .tag { background: #222; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #444; }
+    
+    /* ZPL STYLES */
+    .lote-item { background: #111; border: 1px solid var(--border); border-left: 6px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+    .lote-pallet { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr auto; gap: 15px; align-items: center; background: #000; padding: 15px; border-radius: 8px; border: 1px solid #222; margin-top: 10px;}
+    .totais-bar { display: flex; justify-content: space-between; margin-top: 20px; font-size: 14px; font-weight: bold; background: #222; padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
+    .totais-bar.error { border-color: var(--danger); background: rgba(255,68,68,0.1); }
+    
+    /* MODALS */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--bg-card); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); display: flex; flex-direction: column;}
+    .modal-header { background: #000; color: var(--primary); padding: 20px; border-bottom: 3px solid var(--primary); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 10; }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 15px 20px; background: #0a0a0a; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+    
+    .checklist-item-wrapper { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; }
+    .checklist-item input { width: 18px; height: 18px; accent-color: var(--primary); margin: 0;}
+    .checklist-item.checked span { text-decoration: line-through; color: #777; }
+    
+    #overlay-block { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- OVERLAY DE BLOQUEIO ZPL -->
+  <div id="overlay-block">
+    <h1 style="color: var(--primary);">LIMITE DE IMPRESSÃO ATINGIDO</h1>
+    <p>O limite de segurança foi atingido.<br>Atualize a tela para recomeçar.</p>
+    <button class="btn btn-submit" style="width: auto; padding: 15px 30px;" onclick="location.reload()">ATUALIZAR TELA</button>
+  </div>
+
+  <nav>
+    <div class="nav-logo">📦 LOGÍSTICA INTEGRADA</div>
+    <div class="nav-links">
+      <button class="nav-btn active" onclick="changeTab('docas')" id="btn-docas">Docas</button>
+      <button class="nav-btn" onclick="changeTab('buffer-form')" id="btn-buffer-form">Novo Abastecimento</button>
+      <button class="nav-btn" onclick="changeTab('buffer-fila')" id="btn-buffer-fila">Painel Tickets</button>
+      <button class="nav-btn" onclick="changeTab('etiquetas')" id="btn-etiquetas">Etiquetas ZPL</button>
+    </div>
+  </nav>
+
+  <!-- LISTAS DE DADOS COMPARTILHADAS -->
+  <datalist id="insumos-lista"></datalist>
+  <datalist id="impressoras-lista"></datalist>
+
+  <!-- ==============================================
+       ABA 1: DOCAS
+       ============================================== -->
+  <div id="tab-docas" class="container active">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap:10px;">
+      <h2>Painel de Situação</h2>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn" style="background: #333; color: #fff;" onclick="gerarRelatorioImagem()" id="btn-gerar-relatorio">📸 Relatório</button>
+        <button class="btn btn-submit" style="width: auto; padding: 12px 20px;" onclick="abrirModalNovaDoca()">➕ Adicionar Doca</button>
+      </div>
+    </div>
+    
+    <div class="docas-layout">
+      <div class="docas-dashboard" id="docas-container">
+        <p style="color: #777;">Carregando painel...</p>
+      </div>
+      <aside class="docas-sidebar">
+        <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px;">📊 Ranking de Ocupação</h3>
+        <div id="sidebar-list"></div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       ABA 2: ABASTECIMENTO FORM
+       ============================================== -->
+  <div id="tab-buffer-form" class="container">
+    <div class="card">
+      <h2 style="margin-bottom: 25px;">📦 Nova Solicitação de Abastecimento</h2>
+      <div class="grid-2">
+        <div>
+          <label>Célula de Atendimento (CAD):</label>
+          <select id="input-cad"><option value="SP04">SP04</option><option value="SP14">SP14</option></select>
+        </div>
+        <div>
+          <label>Setor Destino:</label>
+          <select id="input-setor"><option value="Packing">Packing</option><option value="Put To Wall">Put To Wall</option></select>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; background: #111; padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+        <label>Insumos Necessários:</label>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <!-- INTEGRAÇÃO AQUI: Usando o mesmo datalist da aba de impressão! -->
+          <input type="text" id="input-insumo" list="insumos-lista" placeholder="Pesquise o insumo..." style="flex: 3; min-width: 200px; margin-bottom:0;">
+          <input type="number" id="input-qtd" placeholder="Qtd" min="1" value="1" style="flex: 1; min-width: 80px; margin-bottom:0;">
+          <input type="text" id="input-obs-insumo" placeholder="Observação..." style="flex: 3; min-width: 150px; margin-bottom:0;">
+          <button class="btn" style="background: #333; color:var(--primary);" onclick="adicionarInsumoLista()">Incluir</button>
+        </div>
+      </div>
+      
+      <div style="margin-top: 25px;">
+        <label>🛒 Carrinho:</label>
+        <ul id="lista-itens">
+          <li style="justify-content:center; border:none; color:#777; font-style:italic;">Nenhum item adicionado.</li>
+        </ul>
+        <button class="btn btn-submit" id="btn-enviar-buffer" onclick="enviarFormularioBuffer()">🚀 Confirmar e Criar Solicitação</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       ABA 3: PAINEL TICKETS (BUFFER)
+       ============================================== -->
+  <div id="tab-buffer-fila" class="container">
+    <h2>Fila de Abastecimento</h2>
+    <div id="cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; margin-top: 20px;">
+      <p style="color: #777;">Buscando tickets...</p>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       ABA 4: IMPRESSÃO DE ETIQUETAS ZPL
+       ============================================== -->
+  <div id="tab-etiquetas" class="container">
+    <div class="card">
+      <div class="grid-2" style="margin-bottom: 20px; align-items: end;">
+        <div><h2 style="margin:0; border:none;">IMPRESSÃO EM LOTE (ZPL)</h2></div>
+        <div><label>IP DA IMPRESSORA ZEBRA</label><input type="text" id="global-ip" list="impressoras-lista" placeholder="Selecione ou digite o IP" style="margin:0;"></div>
+      </div>
+      
+      <div class="grid-2">
+        <div><label>Site</label><select id="lote-site"><option value="B R S P 1 4">BRSP14</option><option value="B R S P 0 4">BRSP04</option></select></div>
+        <div><label>Data</label><input type="text" id="lote-data" readonly></div>
+      </div>
+      <div class="grid-2">
+        <div><label>Nota Fiscal</label><input type="text" id="lote-nf" placeholder="Preencha o N.F"></div>
+        <div><label>Pedido</label><input type="text" id="lote-pedido" placeholder="Preencha o pedido"></div>
+      </div>
+
+      <hr style="border-color:var(--border); margin: 25px 0;">
+      
+      <div id="lote-items-container"></div>
+      <button class="btn-secondary" onclick="addLoteZplItem()">+ ADICIONAR INSUMO DA NOTA</button>
+
+      <div style="background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin: 25px 0; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="color: var(--primary);">GERAR PALLET ID AUTOMATICAMENTE?</strong>
+          <div style="font-size: 12px; color: #777;">Imprime etiqueta individual P.ID para cada pallet.</div>
+        </div>
+        <input type="checkbox" id="chk-pallet-id" checked style="width: 24px; height: 24px; margin:0; accent-color: var(--primary); cursor: pointer;">
+      </div>
+
+      <button class="btn btn-submit" id="btn-print-lote" onclick="processarImpressaoLote()">IMPRIMIR LOTE COMPLETO</button>
+      <div id="status-lote" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+    </div>
+  </div>
+
+
+  <!-- ==============================================
+       MODAIS
+       ============================================== -->
+  
+  <!-- Modal Nova Doca -->
+  <div id="modal-add-doca" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header"><h3>➕ Nova Doca</h3><button class="btn" style="background:transparent; color:#fff;" onclick="fecharModal('modal-add-doca')">X</button></div>
+      <div class="modal-body">
+        <label style="text-align:center;">Identificação (Ex: 01, Doca 90)</label>
+        <input type="text" id="input-nova-doca" placeholder="Número..." style="text-align:center; font-size:20px; font-weight:bold;">
+      </div>
+      <div class="modal-footer"><button class="btn btn-submit" onclick="salvarNovaDoca()" id="btn-salvar-nova-doca">Cadastrar Doca</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Edit Doca -->
+  <div id="modal-edit-doca" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 id="edit-doca-titulo">Configurar Doca</h3><button class="btn" style="background:transparent; color:#fff;" onclick="fecharModal('modal-edit-doca')">X</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-doca-id">
+        <label>Situação Operacional</label>
+        <select id="edit-doca-status"><option value="Disponível">Disponível</option><option value="Em Uso">Em Uso</option><option value="Indisponível">Indisponível</option></select>
+        
+        <div style="background:#111; padding:20px; border-radius:8px; border:1px solid var(--border); margin-bottom: 15px; text-align:center;">
+          <label>Nível de Ocupação: <span id="percent-label" style="font-size: 18px; color:var(--primary);">0</span>%</label>
+          <input type="range" id="edit-doca-ocupacao" min="0" max="100" value="0" step="5" oninput="document.getElementById('percent-label').innerText=this.value; if(this.value>0 && document.getElementById('edit-doca-status').value==='Disponível') document.getElementById('edit-doca-status').value='Em Uso';" style="accent-color: var(--primary);">
+        </div>
+        <div class="grid-2">
+          <div><label>Rampa</label><select id="edit-doca-rampa"><option value="OK">OK</option><option value="Danificada">Danificada</option></select></div>
+          <div><label>Porta</label><select id="edit-doca-porta"><option value="OK">OK</option><option value="Danificada">Danificada</option></select></div>
+        </div>
+        <label>Anotações</label>
+        <textarea id="edit-doca-obs" rows="2"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="confirmarExclusaoDoca()">Excluir</button>
+        <button class="btn btn-submit" style="width:auto;" onclick="salvarDocaEditada()" id="btn-salvar-edit-doca">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ticket Buffer -->
+  <div id="modal-solicitacao" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h3>📋 Ticket de Abastecimento</h3><button class="btn" style="background:transparent; color:#fff;" onclick="fecharModal('modal-solicitacao')">X</button></div>
+      <div class="modal-body">
+        <div class="req-tags"><span class="tag" id="modal-cad"></span><span class="tag" id="modal-setor"></span></div>
+        <div style="font-size: 13px; color: #aaa; margin-bottom: 20px;">👤 Aberto por: <span id="modal-email" style="color:#fff;"></span><br>🕒 Horário: <span id="modal-data" style="color:#fff;"></span></div>
+        
+        <label>Checklist de Separação</label>
+        <div id="modal-insumos-lista" style="background:#111; padding:15px; border-radius:8px; border:1px solid var(--border); max-height:250px; overflow-y:auto;"></div>
+        
+        <div id="area-finalizacao" style="margin-top: 15px; padding: 12px; background:rgba(0,200,81,0.1); border: 1px solid var(--success); border-radius: 6px; display:none; color: var(--success);">
+          <strong>✔ Ticket Finalizado</strong><br><span style="font-size:12px;">Por <span id="txt-finalizador"></span> em <span id="txt-data-fim"></span></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="excluirSolicitacaoAtual()" id="btn-excluir-sol">Apagar</button>
+        <button class="btn btn-submit" id="btn-concluir-modal" style="width: auto; display: none;">Finalizar Separação</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       JAVASCRIPT GLOBAL
+       ============================================== -->
+  <script>
+    // Configuração Híbrida (GAS Nativo ou GitHub Pages)
+    // PREENCHA ESTA VARIÁVEL COM A URL DO SEU DEPLOY DO APPS SCRIPT SE FOR HOSPEDAR NO GITHUB PAGES.
+    const API_URL = "https://script.google.com/macros/s/AKfycbxckq_ufJBahOl16I6CGgISVFesdjp2Yg-LTtO_GK_t66UaBTvUaTqOz8HZ835CAi_u/exec"; 
+    const IS_GITHUB_MODE = (typeof google === 'undefined' || !google.script);
+
+    // Sistema de Autenticação Leve
+    let currentUser = localStorage.getItem('logistic_user') || '';
+    if (!currentUser) {
+       currentUser = prompt("SISTEMA LOGÍSTICO\nDigite seu Nome ou E-mail (ex: João Silva):");
+       if (!currentUser) currentUser = "Usuário Externo";
+       localStorage.setItem('logistic_user', currentUser);
+    }
+
+    // Variáveis Globais de Estado
+    let bancoInsumos = [];
+    let docasGlobais = [];
+    let solGlobais = [];
+    let itensBufferSelecionados = [];
+    let solicitacaoAtualLinha = null;
+    let contadorDeImpressoes = 0;
+    const LIMITE_IMPRESSOES = 5;
+
+    // INICIALIZAÇÃO
+    window.addEventListener('load', async () => {
+      // Setup Data Lote
+      const hj = new Date();
+      document.getElementById('lote-data').value = String(hj.getDate()).padStart(2,'0')+'.'+String(hj.getMonth()+1).padStart(2,'0')+'.'+hj.getFullYear();
+      
+      try {
+        const initData = await apiCall('getInitialData');
+        bancoInsumos = initData.insumos;
+        
+        // Popular Datalists
+        const dlInsumos = document.getElementById('insumos-lista');
+        bancoInsumos.forEach(i => dlInsumos.appendChild(new Option(i.nome)));
+        
+        const dlPrinters = document.getElementById('impressoras-lista');
+        initData.impressoras.forEach(ip => dlPrinters.appendChild(new Option(ip)));
+        
+        const slSites = document.getElementById('lote-site');
+        initData.sites.forEach(s => {
+          let spaced = s.split('').join(' ');
+          let opt = new Option(s, spaced);
+          if(!Array.from(slSites.options).some(o => o.text === s)) slSites.appendChild(opt);
+        });
+        
+        addLoteZplItem(); // Add 1st empty ZPL item
+        changeTab('docas'); // Inicia nas Docas
+      } catch(e) {
+        alert("Erro ao inicializar base de dados: " + e);
+      }
+    });
+
+    // Roteador Híbrido (Core Engine)
+    async function apiCall(action, payload = {}) {
+      payload.user = currentUser;
+      if (!IS_GITHUB_MODE) {
+        return new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(res => resolve(res))
+            .withFailureHandler(err => reject(err))
+            .apiRouter(action, payload);
+        });
+      } else {
+        if (!API_URL) throw new Error("API_URL não configurada no HTML.");
+        const fd = new URLSearchParams();
+        fd.append('payload', JSON.stringify({ action: action, ...payload }));
+        
+        const res = await fetch(API_URL, { method: 'POST', body: fd, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }});
+        const json = await res.json();
+        if(json.success) return json.data;
+        throw new Error(json.error);
+      }
+    }
+
+    // Controle de UI
+    function changeTab(tabId) {
+      document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      document.getElementById('btn-' + tabId).classList.add('active');
+      
+      if(tabId === 'docas') loadDocas();
+      if(tabId === 'buffer-fila') loadSolicitacoes();
+    }
+    
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+    function showMsg(elId, msg, color="#fff") { 
+      const el = document.getElementById(elId); 
+      el.innerText = msg; el.style.color = color; 
+      setTimeout(()=>el.innerText='', 5000); 
+    }
+
+    // =====================================
+    // MÓDULO 1: DOCAS
+    // =====================================
+    async function loadDocas() {
+      const container = document.getElementById('docas-container');
+      const side = document.getElementById('sidebar-list');
+      container.innerHTML = '<p style="color:#777;">Atualizando...</p>';
+      
+      try {
+        docasGlobais = await apiCall('getDocas');
+        container.innerHTML = ''; side.innerHTML = '';
+        
+        if (docasGlobais.length === 0) {
+          container.innerHTML = '<p style="color:#777;">Nenhuma doca cadastrada.</p>'; return;
+        }
+
+        docasGlobais.sort((a, b) => (parseInt(a.numero.replace(/\D/g, '')) || 0) - (parseInt(b.numero.replace(/\D/g, '')) || 0));
+
+        docasGlobais.forEach(d => {
+          let classStatus = d.status === 'Em Uso' ? 'st-uso' : (d.status === 'Indisponível' ? 'st-indisp' : 'st-disp');
+          let numLabel = d.numero.toUpperCase().startsWith('DOCA') ? d.numero : 'DOCA ' + d.numero;
+          let rampaErr = d.rampa!=='OK' ? '🚨' : '';
+          let portaErr = d.porta!=='OK' ? '🚨' : '';
+
+          container.innerHTML += `
+            <div class="doca-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size:18px; color:var(--primary);">${numLabel}</h3>
+                <span class="doca-status ${classStatus}">${d.status}</span>
+              </div>
+              <div>
+                <label>Ocupação: ${d.ocupacao}%</label>
+                <div style="background:#000; border-radius:10px; height:8px; overflow:hidden;">
+                  <div style="background:var(--primary); width:${d.ocupacao}%; height:100%; transition:0.3s;"></div>
+                </div>
+              </div>
+              <div style="font-size:12px; color:#aaa;">Rampa: ${d.rampa} ${rampaErr} &bull; Porta: ${d.porta} ${portaErr}</div>
+              ${d.observacoes ? `<div style="background:#220000; color:var(--danger); padding:8px; border-radius:4px; font-size:11px;">📌 ${d.observacoes}</div>` : ''}
+              <button class="btn btn-secondary" style="padding:8px;" onclick="abrirModalEditDoca('${d.id}')">⚙️ Atualizar</button>
+              <div style="font-size:10px; color:#555; text-align:center;">${d.dataAtualizacao} - ${d.usuario.split('@')[0]}</div>
+            </div>`;
+        });
+        
+        // Sidebar Ranking
+        let livres = [...docasGlobais].filter(d => d.status !== 'Indisponível').sort((a,b)=>a.ocupacao - b.ocupacao);
+        livres.forEach(d => {
+          side.innerHTML += `
+            <div class="ranking-item">
+              <div><strong style="color:#fff;">${d.numero}</strong><br><span style="font-size:10px; color:#777;">${d.status}</span></div>
+              <div style="font-size:16px; font-weight:bold; color:var(--primary);">${d.ocupacao}%</div>
+            </div>`;
+        });
+      } catch(e) { container.innerHTML = 'Erro: '+e; }
+    }
+
+    function abrirModalNovaDoca() { document.getElementById('input-nova-doca').value=''; document.getElementById('modal-add-doca').style.display='flex'; }
+    async function salvarNovaDoca() {
+      let num = document.getElementById('input-nova-doca').value;
+      if(!num) return;
+      let btn = document.getElementById('btn-salvar-nova-doca'); btn.disabled=true; btn.innerText="Salvando...";
+      try { await apiCall('adicionarDoca', {numero: num}); fecharModal('modal-add-doca'); loadDocas(); } 
+      catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="Cadastrar Doca"; }
+    }
+
+    function abrirModalEditDoca(id) {
+      let d = docasGlobais.find(x => x.id.toString() === id.toString());
+      if(!d) return;
+      document.getElementById('edit-doca-id').value = d.id;
+      document.getElementById('edit-doca-titulo').innerText = 'Doca ' + d.numero;
+      document.getElementById('edit-doca-status').value = d.status;
+      document.getElementById('edit-doca-ocupacao').value = d.ocupacao;
+      document.getElementById('percent-label').innerText = d.ocupacao;
+      document.getElementById('edit-doca-rampa').value = d.rampa;
+      document.getElementById('edit-doca-porta').value = d.porta;
+      document.getElementById('edit-doca-obs').value = d.observacoes;
+      document.getElementById('modal-edit-doca').style.display = 'flex';
+    }
+
+    async function salvarDocaEditada() {
+      let btn = document.getElementById('btn-salvar-edit-doca'); btn.disabled=true; btn.innerText="Salvando...";
+      let payload = {
+        id: document.getElementById('edit-doca-id').value, status: document.getElementById('edit-doca-status').value,
+        ocupacao: document.getElementById('edit-doca-ocupacao').value, rampa: document.getElementById('edit-doca-rampa').value,
+        porta: document.getElementById('edit-doca-porta').value, observacoes: document.getElementById('edit-doca-obs').value
+      };
+      try { await apiCall('atualizarDoca', payload); fecharModal('modal-edit-doca'); loadDocas(); } 
+      catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="Salvar Alterações"; }
+    }
+
+    async function confirmarExclusaoDoca() {
+      if(!confirm("Excluir doca permanentemente?")) return;
+      try { await apiCall('removerDoca', {id: document.getElementById('edit-doca-id').value}); fecharModal('modal-edit-doca'); loadDocas(); } 
+      catch(e){ alert(e); }
+    }
+
+    // =====================================
+    // MÓDULO 2: BUFFER (FORM E FILA)
+    // =====================================
+    function adicionarInsumoLista() {
+      let insumo = document.getElementById('input-insumo').value;
+      let qtd = document.getElementById('input-qtd').value;
+      let obs = document.getElementById('input-obs-insumo').value.trim();
+      if(!insumo) return alert("Digite o insumo");
+      let texto = `${qtd}x - ${insumo}` + (obs ? ` (Obs: ${obs})` : '');
+      itensBufferSelecionados.push(texto);
+      atualizarUiBufferLista();
+      document.getElementById('input-insumo').value = '';
+      document.getElementById('input-obs-insumo').value = '';
+    }
+
+    function atualizarUiBufferLista() {
+      let ul = document.getElementById('lista-itens'); ul.innerHTML = '';
+      if(itensBufferSelecionados.length===0) { ul.innerHTML = '<li style="justify-content:center; border:none; color:#777; font-style:italic;">Nenhum item adicionado.</li>'; return;}
+      itensBufferSelecionados.forEach((it, idx) => {
+        ul.innerHTML += `<li><span>${it}</span> <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="itensBufferSelecionados.splice(${idx},1); atualizarUiBufferLista();">X</button></li>`;
+      });
+    }
+
+    async function enviarFormularioBuffer() {
+      if(itensBufferSelecionados.length===0) return alert("Adicione insumos.");
+      let btn = document.getElementById('btn-enviar-buffer'); btn.disabled=true; btn.innerText="Enviando...";
+      try {
+        await apiCall('salvarSolicitacao', { cad: document.getElementById('input-cad').value, setor: document.getElementById('input-setor').value, insumos: itensBufferSelecionados.join('\n') });
+        itensBufferSelecionados = []; atualizarUiBufferLista();
+        changeTab('buffer-fila');
+      } catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="🚀 Confirmar e Criar Solicitação"; }
+    }
+
+    async function loadSolicitacoes() {
+      const c = document.getElementById('cards-container'); c.innerHTML = '<p style="color:#777;">Carregando...</p>';
+      try {
+        solGlobais = await apiCall('getSolicitacoes');
+        c.innerHTML = '';
+        if(solGlobais.length===0) { c.innerHTML='<p style="color:#777;">Fila vazia.</p>'; return; }
+        
+        solGlobais.forEach(req => {
+          let isDone = req.status === 'Concluído';
+          let itensArr = req.insumos.split('\n').filter(i=>i);
+          let concluidoObj = JSON.parse(req.itensConcluidos || '{}');
+          let pct = itensArr.length > 0 ? (Object.keys(concluidoObj).length / itensArr.length)*100 : 0;
+          
+          c.innerHTML += `
+            <div class="req-card ${isDone?'concluido':''}" onclick="abrirModalSol('${req.id}')">
+              <div class="req-tags"><span class="tag">${req.cad}</span><span class="tag">${req.setor}</span></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <strong style="color:var(--primary); font-size:14px;">${req.email.split('@')[0]}</strong>
+                <span style="font-size:11px; color:${isDone?'var(--success)':'#FF8800'};">${isDone?'CONCLUÍDO':'PENDENTE'}</span>
+              </div>
+              <div style="background:#000; border-radius:10px; height:6px; margin-bottom:10px;">
+                <div style="background:${isDone?'var(--success)':'var(--primary)'}; height:100%; width:${pct}%;"></div>
+              </div>
+              <div style="font-size:11px; color:#666;">${req.dataHora}</div>
+            </div>`;
+        });
+      } catch(e) { c.innerHTML = 'Erro: '+e; }
+    }
+
+    function abrirModalSol(id) {
+      let req = solGlobais.find(x => x.id === id); if(!req) return;
+      solicitacaoAtualLinha = req.linha;
+      document.getElementById('modal-cad').innerText = req.cad; document.getElementById('modal-setor').innerText = req.setor;
+      document.getElementById('modal-email').innerText = req.email; document.getElementById('modal-data').innerText = req.dataHora;
+      
+      let lst = document.getElementById('modal-insumos-lista'); lst.innerHTML = '';
+      let arr = req.insumos.split('\n').filter(i=>i);
+      let conc = JSON.parse(req.itensConcluidos || '{}');
+      let btnConc = document.getElementById('btn-concluir-modal');
+      
+      if(req.status === 'Concluído') {
+        btnConc.style.display='none'; document.getElementById('area-finalizacao').style.display='block';
+        document.getElementById('txt-finalizador').innerText=req.finalizadoPor; document.getElementById('txt-data-fim').innerText=req.dataFinalizacao;
+        arr.forEach((it, idx) => {
+          lst.innerHTML += `<div class="checklist-item-wrapper"><label class="checklist-item checked"><input type="checkbox" checked disabled> <span>${it}</span></label>
+            <div style="color:var(--success); font-size:11px; margin-left:28px; margin-top:5px;">✔ ${conc[idx]||req.finalizadoPor}</div></div>`;
+        });
+      } else {
+        document.getElementById('area-finalizacao').style.display='none';
+        arr.forEach((it, idx) => {
+          let mark = conc[idx] ? 'checked' : '';
+          lst.innerHTML += `<div class="checklist-item-wrapper"><label class="checklist-item ${mark}">
+            <input type="checkbox" ${mark} onchange="toggleInsumoCheck(this, ${req.linha}, ${idx}, ${arr.length})"> <span>${it}</span></label>
+            <div class="lbl-conc" style="color:var(--success); font-size:11px; margin-left:28px; margin-top:5px;">${conc[idx]? '✔ '+conc[idx] : ''}</div></div>`;
+        });
+        checkAllChecked(arr.length);
+        btnConc.onclick = async () => {
+          btnConc.disabled=true; btnConc.innerText="Finalizando...";
+          try{ await apiCall('concluirSolicitacao', {linha: req.linha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); } 
+          catch(e){alert(e);} finally{btnConc.disabled=false; btnConc.innerText="Finalizar Separação";}
+        };
+      }
+      document.getElementById('modal-solicitacao').style.display = 'flex';
+    }
+
+    async function toggleInsumoCheck(chk, linha, idx, total) {
+      let w = chk.closest('.checklist-item-wrapper');
+      let lbl = w.querySelector('label'); let msg = w.querySelector('.lbl-conc');
+      if(chk.checked) { lbl.classList.add('checked'); msg.innerHTML = '<span style="color:#FFA000;">⏳ Salvando...</span>'; } 
+      else { lbl.classList.remove('checked'); msg.innerHTML = ''; }
+      
+      try {
+        let newJsonStr = await apiCall('atualizarItemSolicitacao', {linha: linha, indexItem: idx, isChecked: chk.checked});
+        let req = solGlobais.find(r => r.linha === linha); if(req) req.itensConcluidos = newJsonStr;
+        if(chk.checked) msg.innerHTML = '✔ ' + currentUser;
+        checkAllChecked(total);
+      } catch(e) { chk.checked = !chk.checked; alert("Erro ao salvar."); }
+    }
+
+    function checkAllChecked(total) {
+      let mk = document.querySelectorAll('#modal-insumos-lista input[type="checkbox"]:checked').length;
+      document.getElementById('btn-concluir-modal').style.display = (mk === total && total > 0) ? 'inline-block' : 'none';
+    }
+
+    async function excluirSolicitacaoAtual() {
+      if(!confirm("Excluir ticket permanentemente?")) return;
+      try { await apiCall('excluirSolicitacao', {linha: solicitacaoAtualLinha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); }
+      catch(e){alert(e);}
+    }
+
+    // =====================================
+    // MÓDULO 3: ZPL LOTE (ETIQUETAS)
+    // =====================================
+    function maskNumber(el) {
+      let val = el.value.replace(/\D/g, '');
+      if (val) val = parseInt(val, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      el.value = val;
+      if (el.classList.contains('li-total') || el.classList.contains('lp-qtd')) calcFracionamento(el);
+    }
+
+    function addLoteZplItem() {
+      const c = document.getElementById('lote-items-container');
+      const idx = c.querySelectorAll('.lote-item').length + 1;
+      const div = document.createElement('div'); div.className = 'lote-item';
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+          <h3 style="margin:0; color:var(--primary);">📦 Item #${idx}</h3>
+          <button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="this.closest('.lote-item').remove()">REMOVER</button>
+        </div>
+        <div class="grid-2">
+          <div><label>Insumo</label><input type="text" class="li-insumo" list="insumos-lista" oninput="this.value=this.value.toUpperCase(); autoSap(this)"></div>
+          <div><label>Total Recebido (NF)</label><input type="text" class="li-total" oninput="maskNumber(this)"></div>
+        </div>
+        <div style="margin-bottom:15px;"><label>SAP (QR Superior)</label><input type="text" class="li-sap"></div>
+        <div class="pallets-container"></div>
+        <button class="btn btn-secondary" style="margin-top:10px; font-size:11px;" onclick="addPalletZpl(this)">+ TIPO DE PALLET</button>
+        <div class="totais-bar">
+          <div>Alocado: <span class="t-aloc" style="color:var(--primary);">0</span></div>
+          <div>Restante: <span class="t-rest">0</span></div>
+        </div>`;
+      c.appendChild(div);
+      addPalletZpl(div.querySelector('.btn-secondary'));
+    }
+
+    function addPalletZpl(btn) {
+      const c = btn.previousElementSibling;
+      const div = document.createElement('div'); div.className = 'lote-pallet';
+      div.innerHTML = `
+        <div><label style="color:var(--primary);">⭐ LOTE PALLET</label><input type="text" class="lp-lote" style="border-color:var(--primary);"></div>
+        <div><label>QTD POR PALLET</label><input type="text" class="lp-qtd" oninput="maskNumber(this)"></div>
+        <div><label>COPIAS</label><input type="number" class="lp-copias" oninput="calcFracionamento(this)"></div>
+        <button class="btn btn-danger" style="margin-top:15px; padding:10px;" onclick="let pt=this.closest('.lote-item'); this.closest('.lote-pallet').remove(); calcFracionamento(pt.querySelector('.li-total'));">X</button>`;
+      c.appendChild(div);
+    }
+
+    function autoSap(input) {
+      let v = input.value.trim().toUpperCase();
+      let f = bancoInsumos.find(i => i.nome === v);
+      let p = input.closest('.lote-item');
+      if(p && f) p.querySelector('.li-sap').value = f.sap;
+    }
+
+    function calcFracionamento(el) {
+      let p = el.closest('.lote-item'); if(!p) return;
+      let total = parseFloat(p.querySelector('.li-total').value.replace(/\./g,''))||0;
+      let alocado = 0;
+      p.querySelectorAll('.lote-pallet').forEach(pal => {
+        let q = parseFloat(pal.querySelector('.lp-qtd').value.replace(/\./g,''))||0;
+        let c = parseInt(pal.querySelector('.lp-copias').value)||0;
+        alocado += (q * c);
+      });
+      p.querySelector('.t-aloc').innerText = alocado.toLocaleString('pt-BR');
+      p.querySelector('.t-rest').innerText = (total - alocado).toLocaleString('pt-BR');
+      let bar = p.querySelector('.totais-bar');
+      if(total - alocado < 0) bar.classList.add('error'); else bar.classList.remove('error');
+    }
+
+    function gerarPalletId(pref) {
+      const l="ABCDEFGHIJKLMNOPQRSTUVWXYZ", n="0123456789";
+      let p1 = (pref && pref.length>=2) ? pref[0] : l[Math.floor(Math.random()*26)];
+      let p2 = (pref && pref.length>=2) ? pref[1] : l[Math.floor(Math.random()*26)];
+      return p1+p2+n[Math.floor(Math.random()*10)]+n[Math.floor(Math.random()*10)]+l[Math.floor(Math.random()*26)]+n[Math.floor(Math.random()*10)];
+    }
+
+    function gerarZplBase(site, data, nf, ped, lote, sap, txt, qtd, copy, fs, py, px, fw) {
+      let zTxt = txt.replace(/\n/g,'\\&'), qrIn = String(qtd).replace(/\./g,'');
+      let bx = Math.max(0, Math.floor(240 - ((qrIn.length-1)*38)) - 25);
+      return `^XA^CI28\n^PW800\n^LL1200\n^FO15,60^GB480,110,110^FS\n^FO30,75^A0N,85,85^FR^FD${site}^FS\n^FO525,65^A0N,45,45^FDCÓDIGO SAP^FS\n^FO515,115^BQN,2,12^FDQA,${sap}^FS\n^FO35,190^A0N,50,50^FDDATA:  ${data}^FS\n^FO35,255^A0N,50,50^FDNOTA FISCAL: ${nf}^FS\n^FO35,320^A0N,50,50^FDPEDIDO: ${ped}^FS\n^FO35,385^A0N,50,50^FDLOTE: ${lote}^FS\n^FO0,445^GB760,0,4^FS\n^FO${px},${py}^A0N,${fs},${fs}^FB${fw},8,10,C^FD${zTxt}^FS\n^FO0,875^GB760,0,4^FS\n^FO185,900^GB380,65,65^FS\n^FO185,910^A0N,50,50^FB380,1,0,C^FR^FDQUANTIDADE:^FS\n^FO${bx},980^BY7^BCN,140,N,N,N^FD${qrIn}^FS\n^FO185,1130^A0N,40,40^FB380,1,0,C^FD${qtd}^FS\n^PQ${copy},0,1,Y\n^XZ\n`;
+    }
+
+    function formatTextZpl(txt) {
+      let arr = txt.trim().split(/\s+/), len = arr.length;
+      if(len<=3) return { texto: arr.join('\n'), fontSize: (len===1?300: (len===2?220:135)), posY: 445+(len===1?115: (len===2?105:100)), posX: len===1?40:0, fbWidth: len===1?760:(len===2?780:800) };
+      let l=[], c="";
+      arr.forEach(w => { if(c==="")c=w; else if((c+" "+w).length<=13) c+=" "+w; else{l.push(c); c=w;} });
+      if(c!=="") l.push(c);
+      let fs = l.length===4?215:(l.length===5?200:185);
+      return { texto: l.slice(0,6).join('\n'), fontSize: Math.min(fs, Math.floor(1300/Math.max(...l.map(x=>x.length)))), posY: 445 + Math.floor((430 - ((fs*l.length)+((l.length-1)*10)))/2), posX:0, fbWidth:800 };
+    }
+
+    async function processarImpressaoLote() {
+      if(contadorDeImpressoes >= LIMITE_IMPRESSOES) return document.getElementById('overlay-block').style.display = 'flex';
+      let site = document.getElementById('lote-site').value, data = document.getElementById('lote-data').value;
+      let nf = document.getElementById('lote-nf').value.trim(), ped = document.getElementById('lote-pedido').value.trim();
+      let ip = document.getElementById('global-ip').value.trim();
+
+      if(!ip) return showMsg('status-lote', '⚠️ Informe o IP da impressora.', 'var(--danger)');
+      if(!site||!data||!nf||!ped) return showMsg('status-lote', '⚠️ Preencha Site, NF e Pedido.', 'var(--danger)');
+      
+      let itens = document.querySelectorAll('.lote-item'); if(itens.length===0) return;
+      let printPID = document.getElementById('chk-pallet-id').checked;
+      let zplOut = "", erro = false, dbLogs = [];
+
+      for(let i=0; i<itens.length; i++) {
+        let it = itens[i], ins = it.querySelector('.li-insumo').value, sap = it.querySelector('.li-sap').value.trim();
+        let total = parseFloat(it.querySelector('.li-total').value.replace(/\./g,''))||0;
+        let pals = it.querySelectorAll('.lote-pallet');
+        
+        if(!ins || !sap || total<=0 || pals.length===0) { erro = true; showMsg('status-lote', `⚠️ Revise o Item #${i+1} (Em branco ou sem pallets)`); break; }
+        
+        let pref = (bancoInsumos.find(x=>x.nome===ins.toUpperCase())||{}).prefixo || "";
+        let fmt = formatTextZpl(ins.toUpperCase()), valids = 0, aloc = 0;
+
+        for(let j=0; j<pals.length; j++) {
+          let p = pals[j], lp = p.querySelector('.lp-lote').value.trim();
+          let sq = p.querySelector('.lp-qtd').value.trim(), cq = parseInt(p.querySelector('.lp-copias').value)||0;
+          let nq = parseFloat(sq.replace(/\./g,''))||0;
+
+          if(!lp) { erro=true; showMsg('status-lote', `⚠️ Lote vazio no Item #${i+1}`); break; }
+          if(nq>0 && cq>0) {
+            aloc += (nq*cq); valids++;
+            for(let c=0; c<(printPID?cq:1); c++) {
+              let cpCount = printPID ? 1 : cq;
+              let pid = printPID ? gerarPalletId(pref) : "-";
+              zplOut += gerarZplBase(site, data, nf, ped, lp, sap, fmt.texto, sq, cpCount, fmt.fontSize, fmt.posY, fmt.posX, fmt.fbWidth);
+              if(printPID) zplOut += `^XA^CI28\n^PW800\n^LL1200\n^FO0,70^A0N,80,80^FB800,1,0,C^FD${site}^FS\n^FO150,170^GB500,80,40^FS\n^FO150,185^A0N,50,50^FR^FB500,1,0,C^FDPALLET ID^FS\n^FO138,260^BQN,2,25^FDHA,${pid}^FS\n^FO20,830^GB760,260,130^FS\n^FO55,885^A0N,200,200^FR^FB760,1,0,C^FD${pid}^FS\n^PQ1,0,1,Y\n^XZ\n`;
+              dbLogs.push({ site: site, data: data, nf: nf, pedido: ped, insumo: ins, sap: sap, lotePallet: lp, qtd: sq, copias: cpCount, palletId: pid });
+            }
+          }
+        }
+        if(erro) break;
+        if(aloc > total) { erro=true; showMsg('status-lote', `⚠️ Item #${i+1} excedeu o total da NF!`); break; }
+      }
+      
+      if(erro || zplOut==="") return;
+      
+      showMsg('status-lote', '⏳ Imprimindo e Salvando...', 'var(--primary)');
+      try {
+        await fetch(`http://${ip}:9100/pstprnt`, { method: 'POST', mode: 'no-cors', body: zplOut });
+        await apiCall('registrarImpressao', {dadosLote: dbLogs});
+        showMsg('status-lote', '✅ Sucesso!', 'var(--success)');
+        if(++contadorDeImpressoes >= LIMITE_IMPRESSOES) setTimeout(()=>document.getElementById('overlay-block').style.display='flex', 1500);
+      } catch(e) { showMsg('status-lote', '❌ Erro de Impressão ou Rede.', 'var(--danger)'); }
+    }
+  </script>
+</body>
+</html>
