@@ -119,6 +119,7 @@
     </div>
   </nav>
 
+  <!-- LISTAS DINÂMICAS CARREGADAS PELO JAVASCRIPT -->
   <datalist id="insumos-lista"></datalist>
   <datalist id="impressoras-lista"></datalist>
 
@@ -148,8 +149,18 @@
     <div class="card">
       <h2 style="margin-bottom: 25px;">📦 Nova Solicitação de Abastecimento</h2>
       <div class="grid-2">
-        <div><label>Célula de Atendimento (CAD):</label><select id="input-cad"><option value="SP04">SP04</option><option value="SP14">SP14</option></select></div>
-        <div><label>Setor Destino:</label><select id="input-setor"><option value="Packing">Packing</option><option value="Put To Wall">Put To Wall</option></select></div>
+        <div>
+          <label>Célula de Atendimento (CAD):</label>
+          <select id="input-cad">
+            <!-- Povoado dinamicamente via JavaScript -->
+          </select>
+        </div>
+        <div>
+          <label>Setor Destino:</label>
+          <select id="input-setor">
+            <!-- Povoado dinamicamente via JavaScript -->
+          </select>
+        </div>
       </div>
       
       <div style="margin-top: 20px; background: #111; padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
@@ -187,7 +198,12 @@
       </div>
       
       <div class="grid-2">
-        <div><label>Site</label><select id="lote-site"><option value="B R S P 1 4">BRSP14</option><option value="B R S P 0 4">BRSP04</option></select></div>
+        <div>
+          <label>Site</label>
+          <select id="lote-site">
+            <!-- Povoado dinamicamente via JavaScript -->
+          </select>
+        </div>
         <div><label>Data</label><input type="text" id="lote-data" readonly></div>
       </div>
       <div class="grid-2">
@@ -200,7 +216,6 @@
       <div id="lote-items-container"></div>
       <button class="btn-secondary" onclick="addLoteZplItem()">+ ADICIONAR INSUMO DA NOTA</button>
 
-      <!-- NOVO CONTROLE: Opções de Pallet ID Múltiplas -->
       <div style="background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin: 25px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div>
           <strong style="color: var(--primary);">GERAR PALLET ID AUTOMATICAMENTE?</strong>
@@ -281,7 +296,7 @@
   </div>
 
   <script>
-    // PREENCHA ESTA VARIÁVEL COM A URL DO SEU DEPLOY DO APPS SCRIPT
+    // URL DEPLOY DO APPS SCRIPT
     const API_URL = "https://script.google.com/macros/s/AKfycbxckq_ufJBahOl16I6CGgISVFesdjp2Yg-LTtO_GK_t66UaBTvUaTqOz8HZ835CAi_u/exec"; 
     const IS_GITHUB_MODE = (typeof google === 'undefined' || !google.script);
 
@@ -295,7 +310,7 @@
     let bancoInsumos = [];
     let docasGlobais = [];
     let solGlobais = [];
-    let palletIdsGlobais = new Set(); // Guarda os IDs para verificação de unicidade
+    let palletIdsGlobais = new Set(); 
     let itensBufferSelecionados = [];
     let solicitacaoAtualLinha = null;
     let contadorDeImpressoes = 0;
@@ -308,7 +323,7 @@
       try {
         const initData = await apiCall('getInitialData');
         bancoInsumos = initData.insumos;
-        palletIdsGlobais = new Set(initData.palletIds); // Carrega os IDs usados do Backend
+        palletIdsGlobais = new Set(initData.palletIds); 
         
         const dlInsumos = document.getElementById('insumos-lista');
         bancoInsumos.forEach(i => dlInsumos.appendChild(new Option(i.nome)));
@@ -317,11 +332,18 @@
         initData.impressoras.forEach(ip => dlPrinters.appendChild(new Option(ip)));
         
         const slSites = document.getElementById('lote-site');
+        const slCad = document.getElementById('input-cad');
+        slSites.innerHTML = ''; slCad.innerHTML = '';
+        
         initData.sites.forEach(s => {
           let spaced = s.split('').join(' ');
-          let opt = new Option(s, spaced);
-          if(!Array.from(slSites.options).some(o => o.text === s)) slSites.appendChild(opt);
+          slSites.appendChild(new Option(s, spaced)); // Com espaço para ZPL
+          slCad.appendChild(new Option(s, s)); // Sem espaço para Buffer
         });
+
+        const slSetores = document.getElementById('input-setor');
+        slSetores.innerHTML = '';
+        initData.setores.forEach(s => slSetores.appendChild(new Option(s, s)));
         
         addLoteZplItem(); 
         changeTab('docas'); 
