@@ -20,6 +20,7 @@
       --danger: #ff4444;
       --success: #00C851;
       --warning: #FF8800;
+      --blue: #00a8ff;
     }
     
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -63,21 +64,13 @@
     .docas-dashboard { flex: 3; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
     .doca-card { background: var(--bg-card); padding: 20px; border-radius: 10px; border: 1px solid var(--border); border-left: 6px solid var(--primary); display: flex; flex-direction: column; gap: 10px; }
     .doca-status { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; border: 1px solid transparent; }
-    .st-disp { background: rgba(0,200,81,0.1); color: var(--success); border-color: var(--success); }
-    .st-uso { background: rgba(255,230,0,0.1); color: var(--primary); border-color: var(--primary); }
-    .st-indisp { background: rgba(255,68,68,0.1); color: var(--danger); border-color: var(--danger); }
-    
-    .docas-sidebar { flex: 1; min-width: 250px; background: var(--bg-card); border-radius: 10px; padding: 20px; border: 1px solid var(--border); max-height: 80vh; overflow-y: auto; position: sticky; top: 90px; }
-    .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border); }
     
     /* BUFFER STYLES */
     ul#lista-itens { background: var(--input-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); list-style: none; margin: 0 0 20px 0; }
     ul#lista-itens li { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 10px; margin-bottom: 8px; border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 6px; font-size: 13px; }
-    
     .req-card { background: var(--bg-card); border-radius: 10px; padding: 20px; cursor: pointer; border: 1px solid var(--border); border-left: 6px solid var(--primary); transition: 0.3s; }
     .req-card:hover { transform: translateY(-3px); border-color: #666; }
     .req-card.concluido { opacity: 0.5; border-left-color: #555; }
-    .req-tags { display: flex; gap: 8px; margin-bottom: 10px;}
     .tag { background: #222; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #444; }
     
     /* ZPL STYLES */
@@ -92,11 +85,31 @@
     .modal-header { background: #000; color: var(--primary); padding: 20px; border-bottom: 3px solid var(--primary); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index: 10; }
     .modal-body { padding: 20px; }
     .modal-footer { padding: 15px 20px; background: #0a0a0a; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
-    
     .checklist-item-wrapper { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
     .checklist-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; }
     .checklist-item input { width: 18px; height: 18px; accent-color: var(--primary); margin: 0;}
     .checklist-item.checked span { text-decoration: line-through; color: #777; }
+    
+    /* ESTILOS DO MONITOR EXTERNO (INTEGRADO) */
+    .btn-sound { background: #222; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 13px; }
+    .btn-sound.active { background: rgba(76, 209, 55, 0.2); border-color: var(--success); color: var(--success); }
+    .mon-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .mon-table th, .mon-table td { padding: 12px; border-bottom: 1px solid #2a2a2a; border-right: 1px solid #2a2a2a; font-size: 13px; vertical-align: middle; }
+    .mon-table th { background-color: #000; color: #bbb; font-weight: bold; text-transform: uppercase; font-size: 11px; border-bottom: 2px solid var(--blue); border-top: none; }
+    .mon-table tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.02); }
+    .mon-table tbody tr:hover td { background-color: rgba(0, 168, 255, 0.08) !important; }
+    .mon-badge-setor { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); display: inline-block; margin-bottom: 4px; }
+    .mon-badge-turno { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; color: #fff; display: inline-block; }
+    .badge-Pendente { background-color: rgba(251, 197, 49, 0.15); color: var(--warning); border: 1px solid var(--warning); text-transform: uppercase; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;}
+    .badge-Entregue { background-color: rgba(76, 209, 55, 0.15); color: var(--success); border: 1px solid var(--success); text-transform: uppercase; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;}
+    .badge-Rejeitada { background-color: rgba(232, 65, 24, 0.15); color: var(--danger); border: 1px solid var(--danger); text-transform: uppercase; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;}
+    .mon-hl-qtd { background-color: var(--primary); color: #000; font-weight: 900; font-size: 18px; text-align: center; padding: 4px 10px; border-radius: 6px; display: inline-block;}
+    .mon-time-alert { display: block; margin-top: 4px; font-size: 10px; color: #ff6b6b; font-weight: bold; background: rgba(255, 107, 107, 0.1); padding: 2px 4px; border-radius: 3px; border: 1px solid rgba(255, 107, 107, 0.3); }
+    .row-new td { background-color: rgba(0, 168, 255, 0.12) !important; }
+    .mon-stats-card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #222; font-size: 13px; }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-bar-container { background: #222; border-radius: 4px; width: 100px; height: 8px; overflow: hidden; margin-left: 10px; }
     
     #overlay-block { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
   </style>
@@ -109,6 +122,7 @@
     <button class="btn btn-submit" style="width: auto; padding: 15px 30px;" onclick="location.reload()">ATUALIZAR TELA</button>
   </div>
 
+  <!-- MENU PRINCIPAL -->
   <nav>
     <div class="nav-logo">📦 LOGÍSTICA INTEGRADA</div>
     <div class="nav-links">
@@ -116,10 +130,10 @@
       <button class="nav-btn" onclick="changeTab('buffer-form')" id="btn-buffer-form">Novo Abastecimento</button>
       <button class="nav-btn" onclick="changeTab('buffer-fila')" id="btn-buffer-fila">Painel Tickets</button>
       <button class="nav-btn" onclick="changeTab('etiquetas')" id="btn-etiquetas">Etiquetas ZPL</button>
+      <button class="nav-btn" onclick="changeTab('monitor')" id="btn-monitor">Monitor Externo</button>
     </div>
   </nav>
 
-  <!-- LISTAS DINÂMICAS CARREGADAS PELO JAVASCRIPT -->
   <datalist id="insumos-lista"></datalist>
   <datalist id="impressoras-lista"></datalist>
 
@@ -151,15 +165,11 @@
       <div class="grid-2">
         <div>
           <label>Célula de Atendimento (CAD):</label>
-          <select id="input-cad">
-            <!-- Povoado dinamicamente via JavaScript -->
-          </select>
+          <select id="input-cad"></select>
         </div>
         <div>
           <label>Setor Destino:</label>
-          <select id="input-setor">
-            <!-- Povoado dinamicamente via JavaScript -->
-          </select>
+          <select id="input-setor"></select>
         </div>
       </div>
       
@@ -200,9 +210,7 @@
       <div class="grid-2">
         <div>
           <label>Site</label>
-          <select id="lote-site">
-            <!-- Povoado dinamicamente via JavaScript -->
-          </select>
+          <select id="lote-site"></select>
         </div>
         <div><label>Data</label><input type="text" id="lote-data" readonly></div>
       </div>
@@ -235,8 +243,52 @@
     </div>
   </div>
 
+  <!-- ABA 5: MONITOR EXTERNO -->
+  <div id="tab-monitor" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap:15px;">
+      <h2 style="border:none; margin:0;">Monitor de <span style="color:var(--blue);">Solicitações Externas</span></h2>
+      <div style="display:flex; gap:15px; align-items:center;">
+        <button id="btn-sound" class="btn-sound" onclick="monToggleSound()">🔕 Notificação</button>
+        <div id="mon-loader" style="color:var(--primary); font-size:12px; font-weight:bold;">Carregando...</div>
+      </div>
+    </div>
 
-  <!-- MODAIS -->
+    <div style="display:flex; gap:10px; overflow-x:auto; margin-bottom:15px;">
+      <button class="nav-btn active" id="mon-tab-Hoje" onclick="setMonTab('Hoje')" style="border-color:var(--blue); color:var(--blue);">📅 Hoje</button>
+      <button class="nav-btn" id="mon-tab-Pendente" onclick="setMonTab('Pendente')">⏳ Pendentes</button>
+      <button class="nav-btn" id="mon-tab-Entregue" onclick="setMonTab('Entregue')">✅ Entregues</button>
+      <button class="nav-btn" id="mon-tab-Todos" onclick="setMonTab('Todos')">📋 Todas</button>
+      <button class="nav-btn" id="mon-tab-Estatisticas" onclick="setMonTab('Estatisticas')">📊 Estatísticas Detalhadas</button>
+    </div>
+
+    <div id="mon-view-table">
+      <div style="background:var(--bg-card); border:2px solid var(--border); border-radius:8px; overflow-x:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.5);">
+        <table class="mon-table">
+          <thead>
+            <tr>
+              <th style="width: 140px;">Data / Hora</th>
+              <th>Solicitante (E-mail)</th>
+              <th>Setor / Turno</th>
+              <th>Material</th>
+              <th style="text-align: center;">Qtd</th>
+              <th>Status / Tempo</th>
+              <th>Responsável</th>
+            </tr>
+          </thead>
+          <tbody id="mon-table-body">
+            <tr><td colspan="7" style="text-align: center;">Iniciando conexão...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="mon-view-stats" style="display:none; margin-top:10px;">
+      <div id="mon-stats-content" class="grid-2"></div>
+    </div>
+  </div>
+
+
+  <!-- MODAIS (DOCAS / BUFFER) -->
   <div id="modal-add-doca" class="modal">
     <div class="modal-content" style="max-width: 400px;">
       <div class="modal-header"><h3>➕ Nova Doca</h3><button class="btn" style="background:transparent; color:#fff;" onclick="fecharModal('modal-add-doca')">X</button></div>
@@ -280,10 +332,8 @@
       <div class="modal-body">
         <div class="req-tags"><span class="tag" id="modal-cad"></span><span class="tag" id="modal-setor"></span></div>
         <div style="font-size: 13px; color: #aaa; margin-bottom: 20px;">👤 Aberto por: <span id="modal-email" style="color:#fff;"></span><br>🕒 Horário: <span id="modal-data" style="color:#fff;"></span></div>
-        
         <label>Checklist de Separação</label>
         <div id="modal-insumos-lista" style="background:#111; padding:15px; border-radius:8px; border:1px solid var(--border); max-height:250px; overflow-y:auto;"></div>
-        
         <div id="area-finalizacao" style="margin-top: 15px; padding: 12px; background:rgba(0,200,81,0.1); border: 1px solid var(--success); border-radius: 6px; display:none; color: var(--success);">
           <strong>✔ Ticket Finalizado</strong><br><span style="font-size:12px;">Por <span id="txt-finalizador"></span> em <span id="txt-data-fim"></span></span>
         </div>
@@ -295,8 +345,9 @@
     </div>
   </div>
 
+  <!-- JAVASCRIPT PRINCIPAL -->
   <script>
-    // URL DEPLOY DO APPS SCRIPT
+    // PREENCHA COM A URL DO SEU DEPLOY
     const API_URL = "https://script.google.com/macros/s/AKfycbxckq_ufJBahOl16I6CGgISVFesdjp2Yg-LTtO_GK_t66UaBTvUaTqOz8HZ835CAi_u/exec"; 
     const IS_GITHUB_MODE = (typeof google === 'undefined' || !google.script);
 
@@ -373,217 +424,104 @@
 
     function changeTab(tabId) {
       document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#btn-docas, #btn-buffer-form, #btn-buffer-fila, #btn-etiquetas, #btn-monitor').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
       document.getElementById('btn-' + tabId).classList.add('active');
       if(tabId === 'docas') loadDocas();
       if(tabId === 'buffer-fila') loadSolicitacoes();
+      if(tabId === 'monitor') monFetchAndRender();
     }
     
     function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
     function showMsg(elId, msg, color="#fff") { 
       const el = document.getElementById(elId); 
       el.innerText = msg; el.style.color = color; 
-      setTimeout(()=>el.innerText='', 5000); 
+      setTimeout(()=>el.innerText='', 6000); 
     }
 
-    // ================= DOCAS =================
-    function getCorOcupacao(pct) {
-      if(pct < 50) return 'var(--success)';
-      if(pct < 80) return 'var(--warning)';
-      return 'var(--danger)';
-    }
-
-    function getBadge(nome, status) {
-      if(status === 'OK') return `<span style="background:rgba(0,200,81,0.15); color:var(--success); padding:4px 8px; border-radius:4px; font-weight:bold; border:1px solid var(--success);">✔ ${nome}: OK</span>`;
-      return `<span style="background:rgba(255,68,68,0.15); color:var(--danger); padding:4px 8px; border-radius:4px; font-weight:bold; border:1px solid var(--danger);">🚨 ${nome}: DANIFICADA</span>`;
-    }
-
+    // ================= DOCAS E BUFFER =================
+    function getCorOcupacao(pct) { if(pct<50) return 'var(--success)'; if(pct<80) return 'var(--warning)'; return 'var(--danger)'; }
+    function getBadge(n, s) { if(s==='OK') return `<span style="background:rgba(0,200,81,0.15); color:var(--success); padding:4px 8px; border-radius:4px; font-weight:bold; border:1px solid var(--success);">✔ ${n}: OK</span>`; return `<span style="background:rgba(255,68,68,0.15); color:var(--danger); padding:4px 8px; border-radius:4px; font-weight:bold; border:1px solid var(--danger);">🚨 ${n}: DANIFICADA</span>`; }
     async function loadDocas() {
-      const container = document.getElementById('docas-container');
-      const side = document.getElementById('sidebar-list');
-      container.innerHTML = '<p style="color:#777;">Atualizando...</p>';
-      
+      const c = document.getElementById('docas-container'), side = document.getElementById('sidebar-list'); c.innerHTML = '<p style="color:#777;">Atualizando...</p>';
       try {
-        docasGlobais = await apiCall('getDocas');
-        container.innerHTML = ''; side.innerHTML = '';
-        if (docasGlobais.length === 0) { container.innerHTML = '<p style="color:#777;">Nenhuma doca cadastrada.</p>'; return; }
-
-        docasGlobais.sort((a, b) => (parseInt(a.numero.replace(/\D/g, '')) || 0) - (parseInt(b.numero.replace(/\D/g, '')) || 0));
-
+        docasGlobais = await apiCall('getDocas'); c.innerHTML = ''; side.innerHTML = '';
+        if (docasGlobais.length===0) { c.innerHTML = '<p style="color:#777;">Nenhuma doca cadastrada.</p>'; return; }
+        docasGlobais.sort((a,b)=>(parseInt(a.numero.replace(/\D/g,''))||0)-(parseInt(b.numero.replace(/\D/g,''))||0));
         docasGlobais.forEach(d => {
-          let classStatus = d.status === 'Em Uso' ? 'st-uso' : (d.status === 'Indisponível' ? 'st-indisp' : 'st-disp');
-          let numLabel = d.numero.toUpperCase().startsWith('DOCA') ? d.numero : 'DOCA ' + d.numero;
-          let corOcupacao = getCorOcupacao(parseInt(d.ocupacao));
-
-          container.innerHTML += `
-            <div class="doca-card">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="margin:0; font-size:18px; color:var(--primary);">${numLabel}</h3>
-                <span class="doca-status ${classStatus}">${d.status}</span>
-              </div>
-              <div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                  <label style="margin:0;">Ocupação</label>
-                  <strong style="color:${corOcupacao}; font-size:14px;">${d.ocupacao}%</strong>
-                </div>
-                <div style="background:#000; border-radius:10px; height:8px; overflow:hidden;">
-                  <div style="background:${corOcupacao}; width:${d.ocupacao}%; height:100%; transition:0.3s;"></div>
-                </div>
-              </div>
-              <div style="display:flex; gap:10px; margin-top:10px; font-size:11px;">
-                ${getBadge('Rampa', d.rampa)} ${getBadge('Porta', d.porta)}
-              </div>
-              ${d.observacoes ? `<div style="background:#220000; color:var(--danger); padding:8px; border-radius:4px; font-size:11px; margin-top:5px;">📌 ${d.observacoes}</div>` : ''}
-              <button class="btn btn-secondary" style="padding:8px; margin-top:5px;" onclick="abrirModalEditDoca('${d.id}')">⚙️ Atualizar</button>
-              <div style="font-size:10px; color:#555; text-align:center;">${d.dataAtualizacao} - ${d.usuario.split('@')[0]}</div>
-            </div>`;
-        });
-        
-        let livres = [...docasGlobais].filter(d => d.status !== 'Indisponível').sort((a,b)=>a.ocupacao - b.ocupacao);
-        livres.forEach(d => {
+          let st = d.status==='Em Uso'?'st-uso':(d.status==='Indisponível'?'st-indisp':'st-disp');
           let cor = getCorOcupacao(parseInt(d.ocupacao));
-          side.innerHTML += `
-            <div class="ranking-item">
-              <div><strong style="color:#fff;">${d.numero}</strong><br><span style="font-size:10px; color:#777;">${d.status}</span></div>
-              <div style="font-size:16px; font-weight:bold; color:${cor};">${d.ocupacao}%</div>
-            </div>`;
+          c.innerHTML += `<div class="doca-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 style="margin:0; font-size:18px; color:var(--primary);">${d.numero.toUpperCase().startsWith('DOCA')?d.numero:'DOCA '+d.numero}</h3>
+              <span class="doca-status ${st}">${d.status}</span>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><label style="margin:0;">Ocupação</label><strong style="color:${cor}; font-size:14px;">${d.ocupacao}%</strong></div>
+              <div style="background:#000; border-radius:10px; height:8px; overflow:hidden;"><div style="background:${cor}; width:${d.ocupacao}%; height:100%; transition:0.3s;"></div></div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px; font-size:11px;">${getBadge('Rampa', d.rampa)} ${getBadge('Porta', d.porta)}</div>
+            ${d.observacoes ? `<div style="background:#220000; color:var(--danger); padding:8px; border-radius:4px; font-size:11px; margin-top:5px;">📌 ${d.observacoes}</div>` : ''}
+            <button class="btn btn-secondary" style="padding:8px; margin-top:5px;" onclick="abrirModalEditDoca('${d.id}')">⚙️ Atualizar</button>
+            <div style="font-size:10px; color:#555; text-align:center;">${d.dataAtualizacao} - ${d.usuario.split('@')[0]}</div>
+          </div>`;
         });
-      } catch(e) { container.innerHTML = 'Erro: '+e; }
+        [...docasGlobais].filter(d=>d.status!=='Indisponível').sort((a,b)=>a.ocupacao-b.ocupacao).forEach(d => {
+          side.innerHTML += `<div class="ranking-item"><div><strong style="color:#fff;">${d.numero}</strong><br><span style="font-size:10px; color:#777;">${d.status}</span></div><div style="font-size:16px; font-weight:bold; color:${getCorOcupacao(parseInt(d.ocupacao))};">${d.ocupacao}%</div></div>`;
+        });
+      } catch(e) { c.innerHTML = 'Erro: '+e; }
     }
-
     function abrirModalNovaDoca() { document.getElementById('input-nova-doca').value=''; document.getElementById('modal-add-doca').style.display='flex'; }
-    async function salvarNovaDoca() {
-      let num = document.getElementById('input-nova-doca').value; if(!num) return;
-      let btn = document.getElementById('btn-salvar-nova-doca'); btn.disabled=true; btn.innerText="Salvando...";
-      try { await apiCall('adicionarDoca', {numero: num}); fecharModal('modal-add-doca'); loadDocas(); } 
-      catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="Cadastrar Doca"; }
-    }
+    async function salvarNovaDoca() { let num=document.getElementById('input-nova-doca').value; if(!num) return; let btn=document.getElementById('btn-salvar-nova-doca'); btn.disabled=true; btn.innerText="Salvando..."; try { await apiCall('adicionarDoca', {numero: num}); fecharModal('modal-add-doca'); loadDocas(); } catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="Cadastrar Doca"; } }
+    function abrirModalEditDoca(id) { let d=docasGlobais.find(x=>x.id.toString()===id.toString()); if(!d) return; document.getElementById('edit-doca-id').value = d.id; document.getElementById('edit-doca-titulo').innerText = 'Doca ' + d.numero; document.getElementById('edit-doca-status').value = d.status; document.getElementById('edit-doca-ocupacao').value = d.ocupacao; document.getElementById('percent-label').innerText = d.ocupacao; document.getElementById('edit-doca-rampa').value = d.rampa; document.getElementById('edit-doca-porta').value = d.porta; document.getElementById('edit-doca-obs').value = d.observacoes; document.getElementById('modal-edit-doca').style.display = 'flex'; }
+    async function salvarDocaEditada() { let btn=document.getElementById('btn-salvar-edit-doca'); btn.disabled=true; btn.innerText="Salvando..."; let payload = { id: document.getElementById('edit-doca-id').value, status: document.getElementById('edit-doca-status').value, ocupacao: document.getElementById('edit-doca-ocupacao').value, rampa: document.getElementById('edit-doca-rampa').value, porta: document.getElementById('edit-doca-porta').value, observacoes: document.getElementById('edit-doca-obs').value }; try { await apiCall('atualizarDoca', payload); fecharModal('modal-edit-doca'); loadDocas(); } catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="Salvar Alterações"; } }
+    async function confirmarExclusaoDoca() { if(!confirm("Excluir doca permanentemente?")) return; try { await apiCall('removerDoca', {id: document.getElementById('edit-doca-id').value}); fecharModal('modal-edit-doca'); loadDocas(); } catch(e){ alert(e); } }
 
-    function abrirModalEditDoca(id) {
-      let d = docasGlobais.find(x => x.id.toString() === id.toString()); if(!d) return;
-      document.getElementById('edit-doca-id').value = d.id;
-      document.getElementById('edit-doca-titulo').innerText = 'Doca ' + d.numero;
-      document.getElementById('edit-doca-status').value = d.status;
-      document.getElementById('edit-doca-ocupacao').value = d.ocupacao;
-      document.getElementById('percent-label').innerText = d.ocupacao;
-      document.getElementById('edit-doca-rampa').value = d.rampa;
-      document.getElementById('edit-doca-porta').value = d.porta;
-      document.getElementById('edit-doca-obs').value = d.observacoes;
-      document.getElementById('modal-edit-doca').style.display = 'flex';
-    }
-
-    async function salvarDocaEditada() {
-      let btn = document.getElementById('btn-salvar-edit-doca'); btn.disabled=true; btn.innerText="Salvando...";
-      let payload = {
-        id: document.getElementById('edit-doca-id').value, status: document.getElementById('edit-doca-status').value,
-        ocupacao: document.getElementById('edit-doca-ocupacao').value, rampa: document.getElementById('edit-doca-rampa').value,
-        porta: document.getElementById('edit-doca-porta').value, observacoes: document.getElementById('edit-doca-obs').value
-      };
-      try { await apiCall('atualizarDoca', payload); fecharModal('modal-edit-doca'); loadDocas(); } 
-      catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="Salvar Alterações"; }
-    }
-
-    async function confirmarExclusaoDoca() {
-      if(!confirm("Excluir doca permanentemente?")) return;
-      try { await apiCall('removerDoca', {id: document.getElementById('edit-doca-id').value}); fecharModal('modal-edit-doca'); loadDocas(); } 
-      catch(e){ alert(e); }
-    }
-
-    // ================= BUFFER =================
-    function adicionarInsumoLista() {
-      let insumo = document.getElementById('input-insumo').value, qtd = document.getElementById('input-qtd').value, obs = document.getElementById('input-obs-insumo').value.trim();
-      if(!insumo) return alert("Digite o insumo");
-      itensBufferSelecionados.push(`${qtd}x - ${insumo}` + (obs ? ` (Obs: ${obs})` : ''));
-      atualizarUiBufferLista();
-      document.getElementById('input-insumo').value = ''; document.getElementById('input-obs-insumo').value = '';
-    }
-
-    function atualizarUiBufferLista() {
-      let ul = document.getElementById('lista-itens'); ul.innerHTML = '';
-      if(itensBufferSelecionados.length===0) { ul.innerHTML = '<li style="justify-content:center; border:none; color:#777; font-style:italic;">Nenhum item adicionado.</li>'; return;}
-      itensBufferSelecionados.forEach((it, idx) => {
-        ul.innerHTML += `<li><span>${it}</span> <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="itensBufferSelecionados.splice(${idx},1); atualizarUiBufferLista();">X</button></li>`;
-      });
-    }
-
-    async function enviarFormularioBuffer() {
-      if(itensBufferSelecionados.length===0) return alert("Adicione insumos.");
-      let btn = document.getElementById('btn-enviar-buffer'); btn.disabled=true; btn.innerText="Enviando...";
-      try {
-        await apiCall('salvarSolicitacao', { cad: document.getElementById('input-cad').value, setor: document.getElementById('input-setor').value, insumos: itensBufferSelecionados.join('\n') });
-        itensBufferSelecionados = []; atualizarUiBufferLista(); changeTab('buffer-fila');
-      } catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="🚀 Confirmar e Criar Solicitação"; }
-    }
-
+    function adicionarInsumoLista() { let ins=document.getElementById('input-insumo').value, qtd=document.getElementById('input-qtd').value, obs=document.getElementById('input-obs-insumo').value.trim(); if(!ins) return alert("Digite o insumo"); itensBufferSelecionados.push(`${qtd}x - ${ins}` + (obs ? ` (Obs: ${obs})` : '')); atualizarUiBufferLista(); document.getElementById('input-insumo').value=''; document.getElementById('input-obs-insumo').value=''; }
+    function atualizarUiBufferLista() { let ul=document.getElementById('lista-itens'); ul.innerHTML=''; if(itensBufferSelecionados.length===0) { ul.innerHTML='<li style="justify-content:center; border:none; color:#777; font-style:italic;">Nenhum item adicionado.</li>'; return;} itensBufferSelecionados.forEach((it, idx) => { ul.innerHTML += `<li><span>${it}</span> <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="itensBufferSelecionados.splice(${idx},1); atualizarUiBufferLista();">X</button></li>`; }); }
+    async function enviarFormularioBuffer() { if(itensBufferSelecionados.length===0) return alert("Adicione insumos."); let btn=document.getElementById('btn-enviar-buffer'); btn.disabled=true; btn.innerText="Enviando..."; try { await apiCall('salvarSolicitacao', { cad: document.getElementById('input-cad').value, setor: document.getElementById('input-setor').value, insumos: itensBufferSelecionados.join('\n') }); itensBufferSelecionados=[]; atualizarUiBufferLista(); changeTab('buffer-fila'); } catch(e) { alert(e); } finally { btn.disabled=false; btn.innerText="🚀 Confirmar e Criar Solicitação"; } }
+    
     async function loadSolicitacoes() {
       const c = document.getElementById('cards-container'); c.innerHTML = '<p style="color:#777;">Carregando...</p>';
       try {
         solGlobais = await apiCall('getSolicitacoes'); c.innerHTML = '';
         if(solGlobais.length===0) { c.innerHTML='<p style="color:#777;">Fila vazia.</p>'; return; }
-        
         solGlobais.forEach(req => {
-          let isDone = req.status === 'Concluído';
-          let itensArr = req.insumos.split('\n').filter(i=>i);
-          let concluidoObj = JSON.parse(req.itensConcluidos || '{}');
-          let pct = itensArr.length > 0 ? (Object.keys(concluidoObj).length / itensArr.length)*100 : 0;
-          
-          c.innerHTML += `
-            <div class="req-card ${isDone?'concluido':''}" onclick="abrirModalSol('${req.id}')">
-              <div class="req-tags"><span class="tag">${req.cad}</span><span class="tag">${req.setor}</span></div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <strong style="color:var(--primary); font-size:14px;">${req.email.split('@')[0]}</strong>
-                <span style="font-size:11px; color:${isDone?'var(--success)':'var(--warning)'};">${isDone?'CONCLUÍDO':'PENDENTE'}</span>
-              </div>
-              <div style="background:#000; border-radius:10px; height:6px; margin-bottom:10px;">
-                <div style="background:${isDone?'var(--success)':'var(--primary)'}; height:100%; width:${pct}%;"></div>
-              </div>
-              <div style="font-size:11px; color:#666;">${req.dataHora}</div>
-            </div>`;
+          let isDone = req.status === 'Concluído'; let itensArr = req.insumos.split('\n').filter(i=>i);
+          let conc = JSON.parse(req.itensConcluidos || '{}'); let pct = itensArr.length>0 ? (Object.keys(conc).length/itensArr.length)*100 : 0;
+          c.innerHTML += `<div class="req-card ${isDone?'concluido':''}" onclick="abrirModalSol('${req.id}')">
+            <div class="req-tags"><span class="tag">${req.cad}</span><span class="tag">${req.setor}</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--primary); font-size:14px;">${req.email.split('@')[0]}</strong>
+              <span style="font-size:11px; color:${isDone?'var(--success)':'var(--warning)'};">${isDone?'CONCLUÍDO':'PENDENTE'}</span>
+            </div>
+            <div style="background:#000; border-radius:10px; height:6px; margin-bottom:10px;"><div style="background:${isDone?'var(--success)':'var(--primary)'}; height:100%; width:${pct}%;"></div></div>
+            <div style="font-size:11px; color:#666;">${req.dataHora}</div>
+          </div>`;
         });
       } catch(e) { c.innerHTML = 'Erro: '+e; }
     }
 
     function abrirModalSol(id) {
       let req = solGlobais.find(x => x.id === id); if(!req) return;
-      solicitacaoAtualLinha = req.linha;
-      document.getElementById('modal-cad').innerText = req.cad; document.getElementById('modal-setor').innerText = req.setor;
-      document.getElementById('modal-email').innerText = req.email; document.getElementById('modal-data').innerText = req.dataHora;
-      
+      solicitacaoAtualLinha = req.linha; document.getElementById('modal-cad').innerText = req.cad; document.getElementById('modal-setor').innerText = req.setor; document.getElementById('modal-email').innerText = req.email; document.getElementById('modal-data').innerText = req.dataHora;
       let lst = document.getElementById('modal-insumos-lista'); lst.innerHTML = '';
       let arr = req.insumos.split('\n').filter(i=>i), conc = JSON.parse(req.itensConcluidos || '{}'), btnConc = document.getElementById('btn-concluir-modal');
-      
       if(req.status === 'Concluído') {
-        btnConc.style.display='none'; document.getElementById('area-finalizacao').style.display='block';
-        document.getElementById('txt-finalizador').innerText=req.finalizadoPor; document.getElementById('txt-data-fim').innerText=req.dataFinalizacao;
-        arr.forEach((it, idx) => {
-          lst.innerHTML += `<div class="checklist-item-wrapper"><label class="checklist-item checked"><input type="checkbox" checked disabled> <span>${it}</span></label>
-            <div style="color:var(--success); font-size:11px; margin-left:28px; margin-top:5px;">✔ ${conc[idx]||req.finalizadoPor}</div></div>`;
-        });
+        btnConc.style.display='none'; document.getElementById('area-finalizacao').style.display='block'; document.getElementById('txt-finalizador').innerText=req.finalizadoPor; document.getElementById('txt-data-fim').innerText=req.dataFinalizacao;
+        arr.forEach((it, idx) => { lst.innerHTML += `<div class="checklist-item-wrapper"><label class="checklist-item checked"><input type="checkbox" checked disabled> <span>${it}</span></label><div style="color:var(--success); font-size:11px; margin-left:28px; margin-top:5px;">✔ ${conc[idx]||req.finalizadoPor}</div></div>`; });
       } else {
         document.getElementById('area-finalizacao').style.display='none';
-        arr.forEach((it, idx) => {
-          let mark = conc[idx] ? 'checked' : '';
-          lst.innerHTML += `<div class="checklist-item-wrapper"><label class="checklist-item ${mark}">
-            <input type="checkbox" ${mark} onchange="toggleInsumoCheck(this, ${req.linha}, ${idx}, ${arr.length})"> <span>${it}</span></label>
-            <div class="lbl-conc" style="color:var(--success); font-size:11px; margin-left:28px; margin-top:5px;">${conc[idx]? '✔ '+conc[idx] : ''}</div></div>`;
-        });
+        arr.forEach((it, idx) => { let mark = conc[idx]?'checked':''; lst.innerHTML += `<div class="checklist-item-wrapper"><label class="checklist-item ${mark}"><input type="checkbox" ${mark} onchange="toggleInsumoCheck(this, ${req.linha}, ${idx}, ${arr.length})"> <span>${it}</span></label><div class="lbl-conc" style="color:var(--success); font-size:11px; margin-left:28px; margin-top:5px;">${conc[idx]? '✔ '+conc[idx] : ''}</div></div>`; });
         checkAllChecked(arr.length);
-        btnConc.onclick = async () => {
-          btnConc.disabled=true; btnConc.innerText="Finalizando...";
-          try{ await apiCall('concluirSolicitacao', {linha: req.linha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); } 
-          catch(e){alert(e);} finally{btnConc.disabled=false; btnConc.innerText="Finalizar Separação";}
-        };
+        btnConc.onclick = async () => { btnConc.disabled=true; btnConc.innerText="Finalizando..."; try{ await apiCall('concluirSolicitacao', {linha: req.linha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); } catch(e){alert(e);} finally{btnConc.disabled=false; btnConc.innerText="Finalizar Separação";} };
       }
       document.getElementById('modal-solicitacao').style.display = 'flex';
     }
 
     async function toggleInsumoCheck(chk, linha, idx, total) {
-      let w = chk.closest('.checklist-item-wrapper');
-      let lbl = w.querySelector('label'); let msg = w.querySelector('.lbl-conc');
-      if(chk.checked) { lbl.classList.add('checked'); msg.innerHTML = '<span style="color:var(--warning);">⏳ Salvando...</span>'; } 
-      else { lbl.classList.remove('checked'); msg.innerHTML = ''; }
-      
+      let w = chk.closest('.checklist-item-wrapper'); let lbl = w.querySelector('label'); let msg = w.querySelector('.lbl-conc');
+      if(chk.checked) { lbl.classList.add('checked'); msg.innerHTML = '<span style="color:var(--warning);">⏳ Salvando...</span>'; } else { lbl.classList.remove('checked'); msg.innerHTML = ''; }
       try {
         let newJsonStr = await apiCall('atualizarItemSolicitacao', {linha: linha, indexItem: idx, isChecked: chk.checked});
         let req = solGlobais.find(r => r.linha === linha); if(req) req.itensConcluidos = newJsonStr;
@@ -591,93 +529,37 @@
         checkAllChecked(total);
       } catch(e) { chk.checked = !chk.checked; alert("Erro ao salvar."); }
     }
-
-    function checkAllChecked(total) {
-      let mk = document.querySelectorAll('#modal-insumos-lista input[type="checkbox"]:checked').length;
-      document.getElementById('btn-concluir-modal').style.display = (mk === total && total > 0) ? 'inline-block' : 'none';
-    }
-
-    async function excluirSolicitacaoAtual() {
-      if(!confirm("Excluir ticket permanentemente?")) return;
-      try { await apiCall('excluirSolicitacao', {linha: solicitacaoAtualLinha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); }
-      catch(e){alert(e);}
-    }
+    function checkAllChecked(total) { document.getElementById('btn-concluir-modal').style.display = (document.querySelectorAll('#modal-insumos-lista input[type="checkbox"]:checked').length === total && total > 0) ? 'inline-block' : 'none'; }
+    async function excluirSolicitacaoAtual() { if(!confirm("Excluir ticket permanentemente?")) return; try { await apiCall('excluirSolicitacao', {linha: solicitacaoAtualLinha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); } catch(e){alert(e);} }
 
     // ================= ZPL LOTE =================
-    function maskNumber(el) {
-      let val = el.value.replace(/\D/g, '');
-      if (val) val = parseInt(val, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      el.value = val;
-      if (el.classList.contains('li-total') || el.classList.contains('lp-qtd')) calcFracionamento(el);
-    }
-
+    function maskNumber(el) { let val=el.value.replace(/\D/g,''); if(val) val=parseInt(val,10).toString().replace(/\B(?=(\d{3})+(?!\d))/g,"."); el.value=val; if(el.classList.contains('li-total')||el.classList.contains('lp-qtd')) calcFracionamento(el); }
     function addLoteZplItem() {
-      const c = document.getElementById('lote-items-container');
-      const idx = c.querySelectorAll('.lote-item').length + 1;
+      const c = document.getElementById('lote-items-container'), idx = c.querySelectorAll('.lote-item').length + 1;
       const div = document.createElement('div'); div.className = 'lote-item';
-      div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-          <h3 style="margin:0; color:var(--primary);">📦 Item #${idx}</h3>
-          <button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="this.closest('.lote-item').remove()">REMOVER</button>
-        </div>
-        <div class="grid-2">
-          <div><label>Insumo</label><input type="text" class="li-insumo" list="insumos-lista" oninput="this.value=this.value.toUpperCase(); autoSap(this)"></div>
-          <div><label>Total Recebido (NF)</label><input type="text" class="li-total" oninput="maskNumber(this)"></div>
-        </div>
+      div.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3 style="margin:0; color:var(--primary);">📦 Item #${idx}</h3><button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="this.closest('.lote-item').remove()">REMOVER</button></div>
+        <div class="grid-2"><div><label>Insumo</label><input type="text" class="li-insumo" list="insumos-lista" oninput="this.value=this.value.toUpperCase(); autoSap(this)"></div><div><label>Total Recebido (NF)</label><input type="text" class="li-total" oninput="maskNumber(this)"></div></div>
         <div style="margin-bottom:15px;"><label>SAP (QR Superior)</label><input type="text" class="li-sap"></div>
         <div class="pallets-container"></div>
         <button class="btn btn-secondary" style="margin-top:10px; font-size:11px;" onclick="addPalletZpl(this)">+ TIPO DE PALLET</button>
-        <div class="totais-bar">
-          <div>Alocado: <span class="t-aloc" style="color:var(--primary);">0</span></div>
-          <div>Restante: <span class="t-rest">0</span></div>
-        </div>`;
-      c.appendChild(div);
-      addPalletZpl(div.querySelector('.btn-secondary'));
+        <div class="totais-bar"><div>Alocado: <span class="t-aloc" style="color:var(--primary);">0</span></div><div>Restante: <span class="t-rest">0</span></div></div>`;
+      c.appendChild(div); addPalletZpl(div.querySelector('.btn-secondary'));
     }
-
     function addPalletZpl(btn) {
-      const c = btn.previousElementSibling;
       const div = document.createElement('div'); div.className = 'lote-pallet';
-      div.innerHTML = `
-        <div><label style="color:var(--primary);">⭐ LOTE PALLET</label><input type="text" class="lp-lote" style="border-color:var(--primary);"></div>
+      div.innerHTML = `<div><label style="color:var(--primary);">⭐ LOTE PALLET</label><input type="text" class="lp-lote" style="border-color:var(--primary);"></div>
         <div><label>QTD POR PALLET</label><input type="text" class="lp-qtd" oninput="maskNumber(this)"></div>
         <div><label>COPIAS</label><input type="number" class="lp-copias" oninput="calcFracionamento(this)"></div>
         <button class="btn btn-danger" style="margin-top:15px; padding:10px;" onclick="let pt=this.closest('.lote-item'); this.closest('.lote-pallet').remove(); calcFracionamento(pt.querySelector('.li-total'));">X</button>`;
-      c.appendChild(div);
+      btn.previousElementSibling.appendChild(div);
     }
-
-    function autoSap(input) {
-      let v = input.value.trim().toUpperCase(), f = bancoInsumos.find(i => i.nome === v), p = input.closest('.lote-item');
-      if(p && f) p.querySelector('.li-sap').value = f.sap;
-    }
-
+    function autoSap(input) { let v = input.value.trim().toUpperCase(), f = bancoInsumos.find(i => i.nome === v), p = input.closest('.lote-item'); if(p && f) p.querySelector('.li-sap').value = f.sap; }
     function calcFracionamento(el) {
       let p = el.closest('.lote-item'); if(!p) return;
       let total = parseFloat(p.querySelector('.li-total').value.replace(/\./g,''))||0, alocado = 0;
-      p.querySelectorAll('.lote-pallet').forEach(pal => {
-        let q = parseFloat(pal.querySelector('.lp-qtd').value.replace(/\./g,''))||0, c = parseInt(pal.querySelector('.lp-copias').value)||0;
-        alocado += (q * c);
-      });
-      p.querySelector('.t-aloc').innerText = alocado.toLocaleString('pt-BR');
-      p.querySelector('.t-rest').innerText = (total - alocado).toLocaleString('pt-BR');
-      let bar = p.querySelector('.totais-bar');
-      if(total - alocado < 0) bar.classList.add('error'); else bar.classList.remove('error');
-    }
-
-    // Geração Única com Validação Real no Banco
-    function gerarPalletIdUnico(pref) {
-      const l="ABCDEFGHIJKLMNOPQRSTUVWXYZ", n="0123456789";
-      let p1 = (pref && pref.length>=2) ? pref[0] : l[Math.floor(Math.random()*26)];
-      let p2 = (pref && pref.length>=2) ? pref[1] : l[Math.floor(Math.random()*26)];
-      let pid;
-      
-      // Laço Matemático: Continua gerando enquanto o ID já existir na Planilha OU na sessão atual
-      do {
-        pid = p1+p2+n[Math.floor(Math.random()*10)]+n[Math.floor(Math.random()*10)]+l[Math.floor(Math.random()*26)]+n[Math.floor(Math.random()*10)];
-      } while (palletIdsGlobais.has(pid));
-      
-      palletIdsGlobais.add(pid); // Adiciona na lista temporária para não repetir no mesmo ciclo
-      return pid;
+      p.querySelectorAll('.lote-pallet').forEach(pal => { let q = parseFloat(pal.querySelector('.lp-qtd').value.replace(/\./g,''))||0, c = parseInt(pal.querySelector('.lp-copias').value)||0; alocado += (q * c); });
+      p.querySelector('.t-aloc').innerText = alocado.toLocaleString('pt-BR'); p.querySelector('.t-rest').innerText = (total - alocado).toLocaleString('pt-BR');
+      let bar = p.querySelector('.totais-bar'); if(total - alocado < 0) bar.classList.add('error'); else bar.classList.remove('error');
     }
 
     function gerarZplBase(site, data, nf, ped, lote, sap, txt, qtd, copy, fs, py, px, fw) {
@@ -690,12 +572,12 @@
       let arr = txt.trim().split(/\s+/), len = arr.length;
       if(len<=3) return { texto: arr.join('\n'), fontSize: (len===1?300: (len===2?220:135)), posY: 445+(len===1?115: (len===2?105:100)), posX: len===1?40:0, fbWidth: len===1?760:(len===2?780:800) };
       let l=[], c="";
-      arr.forEach(w => { if(c==="")c=w; else if((c+" "+w).length<=13) c+=" "+w; else{l.push(c); c=w;} });
-      if(c!=="") l.push(c);
+      arr.forEach(w => { if(c==="")c=w; else if((c+" "+w).length<=13) c+=" "+w; else{l.push(c); c=w;} }); if(c!=="") l.push(c);
       let fs = l.length===4?215:(l.length===5?200:185);
       return { texto: l.slice(0,6).join('\n'), fontSize: Math.min(fs, Math.floor(1300/Math.max(...l.map(x=>x.length)))), posY: 445 + Math.floor((430 - ((fs*l.length)+((l.length-1)*10)))/2), posX:0, fbWidth:800 };
     }
 
+    // A MÁGICA DE IMPRESSÃO - PRIMEIRO BANCO, DEPOIS IMPRESSORA!
     async function processarImpressaoLote() {
       if(contadorDeImpressoes >= LIMITE_IMPRESSOES) return document.getElementById('overlay-block').style.display = 'flex';
       
@@ -709,8 +591,16 @@
       let itens = document.querySelectorAll('.lote-item'); if(itens.length===0) return;
       
       let printPID = document.getElementById('chk-pallet-id').checked;
-      let soPalletId = document.getElementById('chk-so-pallet').checked; // Flag nova para imprimir apenas P.ID
+      let soPalletId = document.getElementById('chk-so-pallet').checked; 
       
+      showMsg('status-lote', '⏳ Validando com o Servidor...', 'var(--primary)');
+      try {
+        let latestIds = await apiCall('getExistingPalletIds');
+        palletIdsGlobais = new Set(latestIds);
+      } catch(e) {
+        return showMsg('status-lote', '❌ Erro ao checar IDs no servidor. Abortado.', 'var(--danger)');
+      }
+
       let zplOut = "", erro = false, dbLogs = [];
 
       for(let i=0; i<itens.length; i++) {
@@ -733,17 +623,20 @@
             aloc += (nq*cq); valids++;
             for(let c=0; c<(printPID?cq:1); c++) {
               let cpCount = printPID ? 1 : cq;
-              let pid = printPID ? gerarPalletIdUnico(pref) : "-"; // Puxa gerador 100% único
               
-              // Se NÃO marcou para imprimir SÓ Pallet Id, imprime a etiqueta base do Insumo
-              if (!soPalletId) {
-                 zplOut += gerarZplBase(site, data, nf, ped, lp, sap, fmt.texto, sq, cpCount, fmt.fontSize, fmt.posY, fmt.posX, fmt.fbWidth);
-              }
-              
-              // Se marcou para imprimir o Pallet ID (em conjunto ou sozinho), anexa a ZPL dele
+              let pid = "-";
               if (printPID) {
-                 zplOut += `^XA^CI28\n^PW800\n^LL1200\n^FO0,70^A0N,80,80^FB800,1,0,C^FD${site}^FS\n^FO150,170^GB500,80,40^FS\n^FO150,185^A0N,50,50^FR^FB500,1,0,C^FDPALLET ID^FS\n^FO138,260^BQN,2,25^FDHA,${pid}^FS\n^FO20,830^GB760,260,130^FS\n^FO55,885^A0N,200,200^FR^FB760,1,0,C^FD${pid}^FS\n^PQ1,0,1,Y\n^XZ\n`;
+                 const l="ABCDEFGHIJKLMNOPQRSTUVWXYZ", n="0123456789";
+                 let p1 = (pref && pref.length>=2) ? pref[0] : l[Math.floor(Math.random()*26)];
+                 let p2 = (pref && pref.length>=2) ? pref[1] : l[Math.floor(Math.random()*26)];
+                 do { pid = p1+p2+n[Math.floor(Math.random()*10)]+n[Math.floor(Math.random()*10)]+l[Math.floor(Math.random()*26)]+n[Math.floor(Math.random()*10)];
+                 } while (palletIdsGlobais.has(pid));
+                 palletIdsGlobais.add(pid);
               }
+              
+              if (!soPalletId) zplOut += gerarZplBase(site, data, nf, ped, lp, sap, fmt.texto, sq, cpCount, fmt.fontSize, fmt.posY, fmt.posX, fmt.fbWidth);
+              if (printPID) zplOut += `^XA^CI28\n^PW800\n^LL1200\n^FO0,70^A0N,80,80^FB800,1,0,C^FD${site}^FS\n^FO150,170^GB500,80,40^FS\n^FO150,185^A0N,50,50^FR^FB500,1,0,C^FDPALLET ID^FS\n^FO138,260^BQN,2,25^FDHA,${pid}^FS\n^FO20,830^GB760,260,130^FS\n^FO55,885^A0N,200,200^FR^FB760,1,0,C^FD${pid}^FS\n^PQ1,0,1,Y\n^XZ\n`;
+              
               dbLogs.push({ site: site, data: data, nf: nf, pedido: ped, insumo: ins, sap: sap, lotePallet: lp, qtd: sq, copias: cpCount, palletId: pid });
             }
           }
@@ -754,14 +647,182 @@
       
       if(erro || zplOut==="") return;
       
-      showMsg('status-lote', '⏳ Imprimindo e Salvando...', 'var(--primary)');
+      showMsg('status-lote', '⏳ Registrando na Planilha...', 'var(--warning)');
+      try {
+        await apiCall('registrarImpressao', {dadosLote: dbLogs});
+      } catch(e) {
+        return showMsg('status-lote', '❌ Erro ao Salvar na Planilha. Impressão Abortada.', 'var(--danger)');
+      }
+
+      showMsg('status-lote', '⏳ Enviando para a Impressora Zebra...', 'var(--primary)');
       try {
         await fetch(`http://${ip}:9100/pstprnt`, { method: 'POST', mode: 'no-cors', body: zplOut });
-        await apiCall('registrarImpressao', {dadosLote: dbLogs});
-        showMsg('status-lote', '✅ Sucesso!', 'var(--success)');
+        showMsg('status-lote', '✅ Registro Feito e Impressão Concluída!', 'var(--success)');
         if(++contadorDeImpressoes >= LIMITE_IMPRESSOES) setTimeout(()=>document.getElementById('overlay-block').style.display='flex', 1500);
-      } catch(e) { showMsg('status-lote', '❌ Erro de Impressão ou Rede.', 'var(--danger)'); }
+      } catch(e) { 
+        showMsg('status-lote', '⚠️ Registrado na Planilha, mas FALHOU na Impressão (Verifique a rede da Zebra).', 'var(--warning)'); 
+      }
     }
+
+
+    // =======================================================
+    // MONITOR EXTERNO (INTEGRAÇÃO DA PLANILHA EXTERNA)
+    // =======================================================
+    let monRawData = [];
+    let monCurrentTab = 'Hoje';
+    let monLastMaxTimestamp = null;
+    let monSoundEnabled = false;
+
+    function monPlayNotificationSound() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        const osc1 = ctx.createOscillator(); const gain1 = ctx.createGain();
+        osc1.connect(gain1); gain1.connect(ctx.destination);
+        osc1.type = 'sine'; osc1.frequency.setValueAtTime(800, ctx.currentTime);
+        gain1.gain.setValueAtTime(0.5, ctx.currentTime); gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 0.15);
+        const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
+        osc2.connect(gain2); gain2.connect(ctx.destination);
+        osc2.type = 'sine'; osc2.frequency.setValueAtTime(1100, ctx.currentTime + 0.15);
+        gain2.gain.setValueAtTime(0.5, ctx.currentTime + 0.15); gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        osc2.start(ctx.currentTime + 0.15); osc2.stop(ctx.currentTime + 0.35);
+      } catch(e) { console.error("Erro som: ", e); }
+    }
+
+    function monToggleSound() {
+      monSoundEnabled = !monSoundEnabled;
+      const btn = document.getElementById('btn-sound');
+      if (monSoundEnabled) {
+        btn.innerHTML = '🔔 Notificação On'; btn.classList.add('active'); monPlayNotificationSound();
+      } else {
+        btn.innerHTML = '🔕 Notificação Off'; btn.classList.remove('active');
+      }
+    }
+
+    function setMonTab(tabName) {
+      monCurrentTab = tabName;
+      document.querySelectorAll('#tab-monitor .nav-btn').forEach(btn => {
+        btn.classList.remove('active'); btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text-main)';
+      });
+      const activeBtn = document.getElementById('mon-tab-' + tabName);
+      activeBtn.classList.add('active'); activeBtn.style.borderColor = 'var(--blue)'; activeBtn.style.color = 'var(--blue)';
+
+      if(tabName === 'Estatisticas') {
+        document.getElementById('mon-view-table').style.display = 'none';
+        document.getElementById('mon-view-stats').style.display = 'block';
+        renderMonStats();
+      } else {
+        document.getElementById('mon-view-table').style.display = 'block';
+        document.getElementById('mon-view-stats').style.display = 'none';
+        applyMonFilters();
+      }
+    }
+
+    async function monFetchAndRender() {
+      let loader = document.getElementById('mon-loader');
+      try {
+        loader.innerText = 'Buscando dados...'; loader.style.color = 'var(--primary)';
+        let data = await apiCall('getDashboardData');
+        
+        let newDataString = JSON.stringify(data);
+        if (newDataString !== JSON.stringify(monRawData)) {
+          monRawData = data;
+          
+          if (data.length > 0) {
+            let currentMax = Math.max(...data.map(item => item.timestamp));
+            if (monLastMaxTimestamp === null) { monLastMaxTimestamp = currentMax; } 
+            else if (currentMax > monLastMaxTimestamp) {
+              monLastMaxTimestamp = currentMax;
+              if (monSoundEnabled) monPlayNotificationSound();
+            }
+          }
+          if(monCurrentTab === 'Estatisticas') renderMonStats(); else applyMonFilters();
+        }
+        let now = new Date();
+        loader.innerText = '● Ao vivo | ' + now.toLocaleTimeString(); loader.style.color = 'var(--success)';
+      } catch(e) {
+        loader.innerText = 'Tentando reconectar...'; loader.style.color = 'var(--danger)';
+      }
+    }
+
+    function applyMonFilters() {
+      let d = new Date(), hojeStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      let filteredData = monRawData;
+      if (monCurrentTab === 'Hoje') filteredData = monRawData.filter(item => item.dataSimples === hojeStr);
+      else if (monCurrentTab === 'Pendente') filteredData = monRawData.filter(item => item.status === 'Pendente');
+      else if (monCurrentTab === 'Entregue') filteredData = monRawData.filter(item => item.status === 'ENTREGUE');
+      
+      const tbody = document.getElementById('mon-table-body'); tbody.innerHTML = '';
+      if (filteredData.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#777; padding:20px;">Vazio.</td></tr>`; return; }
+
+      let nowMs = Date.now();
+      filteredData.slice(0, 100).forEach(req => {
+        let isNew = (nowMs - req.timestamp) <= 300000;
+        let newBadge = isNew ? '<span style="background:var(--blue); color:#000; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; margin-left:5px;">NOVO</span>' : '';
+        let pendingHtml = '';
+        if (req.status === 'Pendente') {
+          let diffMins = Math.floor((nowMs - req.timestamp) / 60000);
+          if (diffMins > 0) pendingHtml = `<div class="mon-time-alert">⏳ Há ${diffMins > 60 ? Math.floor(diffMins/60)+'h '+(diffMins%60)+'m' : diffMins+' min'}</div>`;
+        }
+
+        let badgeStatus = req.status.toLowerCase()==='pendente'? `<span class="badge-Pendente">${req.status}</span>` : (req.status.toLowerCase()==='entregue'?`<span class="badge-Entregue">${req.status}</span>`:`<span class="badge-Rejeitada">${req.status}</span>`);
+
+        tbody.innerHTML += `<tr>
+          <td style="color:#ccc;">${req.dataHora} ${newBadge}</td>
+          <td style="color:#aaa; font-size:12px;">${req.email}</td>
+          <td>
+            <span class="mon-badge-setor" style="background:#00a8ff;">${req.setor}</span><br>
+            <span class="mon-badge-turno" style="background:#555;">${req.turno}</span>
+          </td>
+          <td style="color:var(--blue); font-weight:bold;">${req.material.toUpperCase()}</td>
+          <td style="text-align:center;"><span class="mon-hl-qtd">${req.qtd}</span></td>
+          <td>${badgeStatus}${pendingHtml}</td>
+          <td style="color:#999;">${req.resp}</td>
+        </tr>`;
+      });
+    }
+
+    function renderMonStats() {
+      if(monRawData.length === 0) return;
+      let matQtd = {}, setorCount = {}, statusCount = { 'Entregue': 0, 'Pendente': 0, 'Rejeitadas': 0 }, totalItens = 0;
+
+      monRawData.forEach(r => {
+        matQtd[r.material || '-'] = (matQtd[r.material || '-'] || 0) + r.qtd;
+        setorCount[r.setor || '-'] = (setorCount[r.setor || '-'] || 0) + 1;
+        let sLower = r.status.toLowerCase();
+        if(sLower === 'pendente') statusCount['Pendente']++;
+        else if(sLower === 'entregue') statusCount['Entregue']++;
+        else if(sLower.includes('rejeitada')) statusCount['Rejeitadas']++;
+        totalItens += r.qtd;
+      });
+
+      let topMats = Object.entries(matQtd).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      let topSetores = Object.entries(setorCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+      document.getElementById('mon-stats-content').innerHTML = `
+        <div class="mon-stats-card">
+          <h3 style="border-bottom:1px solid #333; padding-bottom:10px; margin-top:0;">📊 Status Global</h3>
+          <div class="stat-row"><span>Total Pedidos</span> <strong>${monRawData.length}</strong></div>
+          <div class="stat-row"><span>Insumos Solicitados</span> <strong>${totalItens} und.</strong></div>
+          <div class="stat-row" style="color:var(--success);"><span>✅ Entregues</span> <strong>${statusCount['Entregue']}</strong></div>
+          <div class="stat-row" style="color:var(--warning);"><span>⏳ Pendentes</span> <strong>${statusCount['Pendente']}</strong></div>
+          <div class="stat-row" style="color:var(--danger);"><span>❌ Rejeitadas</span> <strong>${statusCount['Rejeitadas']}</strong></div>
+        </div>
+        <div class="mon-stats-card">
+          <h3 style="border-bottom:1px solid #333; padding-bottom:10px; margin-top:0;">📦 Top Materiais Solicitados</h3>
+          ${topMats.map(m => `<div class="stat-row"><span style="color:var(--blue); font-weight:bold;">${m[0]}</span> <strong>${m[1]}</strong></div>`).join('')}
+        </div>
+      `;
+    }
+
+    // Intervalo de Atualização do Monitor
+    setInterval(() => {
+      if (document.getElementById('tab-monitor').classList.contains('active')) {
+        monFetchAndRender();
+      }
+    }, 5000);
+
   </script>
 </body>
 </html>
