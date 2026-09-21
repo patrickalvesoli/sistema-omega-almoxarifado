@@ -70,7 +70,7 @@
     
     .docas-sidebar { flex: 1; min-width: 280px; background: var(--bg-card); border-radius: 10px; padding: 20px; border: 1px solid var(--border); max-height: 80vh; overflow-y: auto; position: sticky; top: 90px; }
     
-    /* NOVO LAYOUT DO RANKING DE OCUPAÇÃO */
+    /* LAYOUT RANKING DE OCUPAÇÃO */
     .ranking-item { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); transition: 0.2s; }
     .ranking-item:hover { background: rgba(255,255,255,0.06); }
     
@@ -109,12 +109,13 @@
     
     #overlay-block { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
 
-    /* Estilo para escurecer inputs que não são necessários no modo Pallet ID */
+    /* Estilo para escurecer inputs desnecessários no modo Pallet ID */
     .only-pallet-mode .op-dim { opacity: 0.3; pointer-events: none; }
   </style>
 </head>
 <body>
 
+  <!-- BLOQUEIO DE IMPRESSÃO (SEGURANÇA ZPL) -->
   <div id="overlay-block">
     <h1 style="color: var(--primary);">LIMITE DE IMPRESSÃO ATINGIDO</h1>
     <p>O limite de segurança foi atingido.<br>Atualize a tela para recomeçar.</p>
@@ -133,10 +134,13 @@
     </div>
   </nav>
 
+  <!-- LISTAS DINÂMICAS CARREGADAS PELO JAVASCRIPT -->
   <datalist id="insumos-lista"></datalist>
   <datalist id="impressoras-lista"></datalist>
 
-  <!-- ABA 1: DOCAS -->
+  <!-- ==============================================
+       ABA 1: DOCAS
+       ============================================== -->
   <div id="tab-docas" class="container active">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap:10px;">
       <h2>Painel de Situação</h2>
@@ -157,7 +161,9 @@
     </div>
   </div>
 
-  <!-- ABA 2: ABASTECIMENTO FORM -->
+  <!-- ==============================================
+       ABA 2: ABASTECIMENTO FORM
+       ============================================== -->
   <div id="tab-buffer-form" class="container">
     <div class="card">
       <h2 style="margin-bottom: 25px;">📦 Nova Solicitação de Abastecimento</h2>
@@ -190,7 +196,9 @@
     </div>
   </div>
 
-  <!-- ABA 3: PAINEL TICKETS (BUFFER) -->
+  <!-- ==============================================
+       ABA 3: PAINEL TICKETS (BUFFER)
+       ============================================== -->
   <div id="tab-buffer-fila" class="container">
     <h2>Fila de Abastecimento</h2>
     <div id="cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; margin-top: 20px;">
@@ -198,7 +206,9 @@
     </div>
   </div>
 
-  <!-- ABA 4: IMPRESSÃO DE ETIQUETAS ZPL -->
+  <!-- ==============================================
+       ABA 4: IMPRESSÃO DE ETIQUETAS ZPL
+       ============================================== -->
   <div id="tab-etiquetas" class="container">
     <div class="card" id="zpl-form-container">
       <div class="grid-2" style="margin-bottom: 20px; align-items: end;">
@@ -242,7 +252,9 @@
     </div>
   </div>
 
-  <!-- ABA 5: ENDEREÇOS (MZ / RK) -->
+  <!-- ==============================================
+       ABA 5: ENDEREÇOS (MZ / RK)
+       ============================================== -->
   <div id="tab-enderecos" class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
       <h2 style="border:none; margin:0;">Impressão de <span style="color:var(--primary);">Endereços</span></h2>
@@ -340,8 +352,9 @@
     </div>
   </div>
 
-
-  <!-- MODAIS (DOCAS / BUFFER) -->
+  <!-- ==============================================
+       MODAIS (DOCAS / BUFFER)
+       ============================================== -->
   <div id="modal-add-doca" class="modal">
     <div class="modal-content" style="max-width: 400px;">
       <div class="modal-header"><h3>➕ Nova Doca</h3><button class="btn" style="background:transparent; color:#fff;" onclick="fecharModal('modal-add-doca')">X</button></div>
@@ -620,6 +633,78 @@
     function checkAllChecked(total) { document.getElementById('btn-concluir-modal').style.display = (document.querySelectorAll('#modal-insumos-lista input[type="checkbox"]:checked').length === total && total > 0) ? 'inline-block' : 'none'; }
     async function excluirSolicitacaoAtual() { if(!confirm("Excluir ticket permanentemente?")) return; try { await apiCall('excluirSolicitacao', {linha: solicitacaoAtualLinha}); fecharModal('modal-solicitacao'); loadSolicitacoes(true); } catch(e){alert(e);} }
 
+    // ================= GERAR IMAGEM RELATÓRIO DOCAS =================
+    function gerarRelatorioImagem() {
+      if (docasGlobais.length === 0) return alert("Não há docas para gerar o relatório.");
+      const btn = document.getElementById('btn-gerar-relatorio');
+      btn.innerText = 'Gerando...'; btn.disabled = true;
+
+      const dataGeracao = new Date().toLocaleString('pt-BR');
+      let linhasTabela = '';
+
+      [...docasGlobais].sort((a, b) => (parseInt(a.numero.replace(/\D/g, '')) || 0) - (parseInt(b.numero.replace(/\D/g, '')) || 0)).forEach(d => {
+        let num = d.numero.toUpperCase().startsWith('DOCA') ? d.numero.toUpperCase() : 'DOCA ' + d.numero.toUpperCase();
+        let corRampa = d.rampa === 'OK' ? '#00C851' : '#ff4444';
+        let corPorta = d.porta === 'OK' ? '#00C851' : '#ff4444';
+
+        linhasTabela += `
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;"><strong>${num}</strong></td>
+            <td style="padding: 10px;">${d.status}</td>
+            <td style="padding: 10px; font-weight:bold;">${d.ocupacao}%</td>
+            <td style="padding: 10px; color:${corRampa}; font-weight:bold;">${d.rampa}</td>
+            <td style="padding: 10px; color:${corPorta}; font-weight:bold;">${d.porta}</td>
+            <td style="padding: 10px;">${d.observacoes || '-'}</td>
+            <td style="padding: 10px;">${d.usuario.split('@')[0]}</td>
+            <td style="padding: 10px;">${d.dataAtualizacao}</td>
+          </tr>`;
+      });
+
+      const reportDiv = document.createElement('div');
+      reportDiv.id = "relatorio-imagem-temp";
+      reportDiv.style.position = "absolute";
+      reportDiv.style.top = "-9999px"; reportDiv.style.left = "0";
+      reportDiv.style.width = "1200px"; reportDiv.style.background = "#fff";
+      reportDiv.style.padding = "40px"; reportDiv.style.color = "#333";
+      reportDiv.style.fontFamily = "Arial, sans-serif";
+
+      reportDiv.innerHTML = `
+        <h1 style="text-align: center; color: #000; border-bottom: 3px solid #FFE600; padding-bottom: 15px; margin-bottom: 20px; text-transform: uppercase;">Relatório de Ocupação das Docas</h1>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 16px; border: 1px solid #e0e0e0; padding: 15px; background: #f9f9f9; border-radius: 4px; border-left: 6px solid #000;">
+          <div><strong>Data e Hora:</strong> ${dataGeracao}</div>
+          <div><strong>Emitido por:</strong> ${currentUser}</div>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; border: 1px solid #ccc;">
+          <thead>
+            <tr style="background-color: #000; color: #FFE600;">
+              <th style="padding: 12px; text-align: left;">Doca</th>
+              <th style="padding: 12px; text-align: left;">Status</th>
+              <th style="padding: 12px; text-align: left;">Ocupação</th>
+              <th style="padding: 12px; text-align: left;">Rampa</th>
+              <th style="padding: 12px; text-align: left;">Porta</th>
+              <th style="padding: 12px; text-align: left;">Observações</th>
+              <th style="padding: 12px; text-align: left;">Validador</th>
+              <th style="padding: 12px; text-align: left;">Última Atualização</th>
+            </tr>
+          </thead>
+          <tbody>${linhasTabela}</tbody>
+        </table>
+        <div style="text-align:right; margin-top:30px; font-size:12px; color:#888;">Sistema Logístico Integrado &copy; 2026</div>
+      `;
+
+      document.body.appendChild(reportDiv);
+      
+      html2canvas(reportDiv, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const link = document.createElement('a'); link.href = imgData; link.download = `Relatorio_Docas_${dataGeracao.replace(/[\/ :]/g, '_')}.png`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link); document.body.removeChild(reportDiv);
+        btn.innerText = '📸 Relatório'; btn.disabled = false;
+      }).catch(err => {
+        alert("Erro ao gerar imagem: " + err); document.body.removeChild(reportDiv);
+        btn.innerText = '📸 Relatório'; btn.disabled = false;
+      });
+    }
+
     // ================= ZPL LOTE (ORQUESTRAÇÃO SALVAR -> IMPRIMIR) =================
     
     function toggleVisibilidadePalletId(checkbox) {
@@ -648,7 +733,7 @@
       const div = document.createElement('div'); div.className = 'lote-pallet';
       div.innerHTML = `<div class="op-dim"><label style="color:var(--primary);">⭐ LOTE PALLET</label><input type="text" class="lp-lote" style="border-color:var(--primary);"></div>
         <div class="op-dim"><label>QTD POR PALLET</label><input type="text" class="lp-qtd" oninput="maskNumber(this)"></div>
-        <div><label>COPIAS</label><input type="number" class="lp-copias" oninput="calcFracionamento(this)"></div>
+        <div><label>COPIAS (ETIQUETAS)</label><input type="number" class="lp-copias" oninput="calcFracionamento(this)"></div>
         <button class="btn btn-danger op-dim" style="margin-top:15px; padding:10px;" onclick="let pt=this.closest('.lote-item'); this.closest('.lote-pallet').remove(); calcFracionamento(pt.querySelector('.li-total'));">X</button>`;
       btn.previousElementSibling.appendChild(div);
     }
@@ -666,8 +751,7 @@
       let p1 = (pref && pref.length>=2) ? pref[0] : l[Math.floor(Math.random()*26)];
       let p2 = (pref && pref.length>=2) ? pref[1] : l[Math.floor(Math.random()*26)];
       let pid;
-      do {
-        pid = p1+p2+n[Math.floor(Math.random()*10)]+n[Math.floor(Math.random()*10)]+l[Math.floor(Math.random()*26)]+n[Math.floor(Math.random()*10)];
+      do { pid = p1+p2+n[Math.floor(Math.random()*10)]+n[Math.floor(Math.random()*10)]+l[Math.floor(Math.random()*26)]+n[Math.floor(Math.random()*10)];
       } while (palletIdsGlobais.has(pid));
       palletIdsGlobais.add(pid); 
       return pid;
@@ -700,7 +784,7 @@
 
       if(!ip) return showMsg('status-lote', '⚠️ Informe o IP da impressora.', 'var(--danger)');
       if(!site) return showMsg('status-lote', '⚠️ Selecione o Site.', 'var(--danger)');
-      // Validação Bypassada se 'Apenas Pallet ID' estiver marcado
+      
       if(!soPalletId && (!data||!nf||!ped)) return showMsg('status-lote', '⚠️ Preencha Data, NF e Pedido.', 'var(--danger)');
       
       let itens = document.querySelectorAll('.lote-item'); if(itens.length===0) return;
@@ -724,10 +808,9 @@
         let pals = it.querySelectorAll('.lote-pallet');
         
         if (soPalletId) {
-            // == MODO APENAS PALLET ID ==
             let qtdTotalCopias = 0;
             pals.forEach(p => qtdTotalCopias += (parseInt(p.querySelector('.lp-copias').value)||0));
-            if (qtdTotalCopias === 0) qtdTotalCopias = 1; // Se não preencheu, imprime 1 Pallet ID por padrão
+            if (qtdTotalCopias === 0) qtdTotalCopias = 1; 
             
             for(let c=0; c<qtdTotalCopias; c++) {
                 let pid = gerarPalletIdUnico(pref);
@@ -735,7 +818,6 @@
                 dbLogs.push({ site: site, data: data, nf: nf||'-', pedido: ped||'-', insumo: ins, sap: sap||'-', lotePallet: '-', qtd: 0, copias: 1, palletId: pid });
             }
         } else {
-            // == MODO NORMAL (COMPLETO) ==
             if(!sap || total<=0 || pals.length===0) { erro = true; showMsg('status-lote', `⚠️ Revise o Item #${i+1} (Em branco ou sem pallets)`); break; }
             let fmt = formatTextZpl(ins.toUpperCase()), valids = 0, aloc = 0;
 
@@ -916,7 +998,6 @@
       let loteZPL = ""; linhas.forEach(end => { loteZPL += gerarZPL_RK_End(end, 1); });
       sendToZebraAddr(loteZPL, 'status-rk', () => { document.getElementById('rk-lista-val').value = ''; });
     }
-
   </script>
 </body>
 </html>
