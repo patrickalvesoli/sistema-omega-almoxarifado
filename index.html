@@ -73,11 +73,19 @@
     .req-card.concluido { opacity: 0.5; border-left-color: #555; }
     .tag { background: #222; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #444; }
     
-    /* ZPL STYLES */
+    /* ZPL STYLES & ENDEREÇOS */
     .lote-item { background: #111; border: 1px solid var(--border); border-left: 6px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 25px; }
     .lote-pallet { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr auto; gap: 15px; align-items: center; background: #000; padding: 15px; border-radius: 8px; border: 1px solid #222; margin-top: 10px;}
     .totais-bar { display: flex; justify-content: space-between; margin-top: 20px; font-size: 14px; font-weight: bold; background: #222; padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
     .totais-bar.error { border-color: var(--danger); background: rgba(255,68,68,0.1); }
+    
+    .sub-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: var(--input-bg); padding: 5px; border-radius: 10px; flex-wrap: wrap; }
+    .sub-tab-btn { flex: 1; background: transparent; border: none; color: var(--text-dim); padding: 8px; font-size: 12px; cursor: pointer; border-radius: 7px; font-weight: 600; text-align: center; transition:0.2s;}
+    .sub-tab-btn.active { background: #262626; color: #fff; }
+    .range-group { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+    .range-group input, .range-group select { margin-bottom: 0; }
+    .range-group span { font-size: 12px; color: var(--text-dim); }
+    .addr-sub-view { animation: fadeIn 0.3s ease; }
     
     /* MODALS */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
@@ -90,7 +98,7 @@
     .checklist-item input { width: 18px; height: 18px; accent-color: var(--primary); margin: 0;}
     .checklist-item.checked span { text-decoration: line-through; color: #777; }
     
-    /* ESTILOS DO MONITOR EXTERNO (INTEGRADO) */
+    /* ESTILOS DO MONITOR DE SOLICITAÇÕES */
     .btn-sound { background: #222; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 13px; }
     .btn-sound.active { background: rgba(76, 209, 55, 0.2); border-color: var(--success); color: var(--success); }
     .mon-table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -126,11 +134,12 @@
   <nav>
     <div class="nav-logo">📦 LOGÍSTICA INTEGRADA</div>
     <div class="nav-links">
-      <button class="nav-btn active" onclick="changeTab('docas')" id="btn-docas">Docas</button>
-      <button class="nav-btn" onclick="changeTab('buffer-form')" id="btn-buffer-form">Novo Abastecimento</button>
-      <button class="nav-btn" onclick="changeTab('buffer-fila')" id="btn-buffer-fila">Painel Tickets</button>
-      <button class="nav-btn" onclick="changeTab('etiquetas')" id="btn-etiquetas">Etiquetas ZPL</button>
-      <button class="nav-btn" onclick="changeTab('monitor')" id="btn-monitor">Monitor Externo</button>
+      <button class="nav-btn active" onclick="changeTab('docas')">Docas</button>
+      <button class="nav-btn" onclick="changeTab('buffer-form')">Novo Abastecimento</button>
+      <button class="nav-btn" onclick="changeTab('buffer-fila')">Painel Tickets</button>
+      <button class="nav-btn" onclick="changeTab('etiquetas')">Etiquetas ZPL</button>
+      <button class="nav-btn" onclick="changeTab('enderecos')">Endereços</button>
+      <button class="nav-btn" onclick="changeTab('monitor')">Monitor de Solicitações</button>
     </div>
   </nav>
 
@@ -243,10 +252,108 @@
     </div>
   </div>
 
-  <!-- ABA 5: MONITOR EXTERNO -->
+  <!-- ABA 5: ENDEREÇOS (MZ / RK) -->
+  <div id="tab-enderecos" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+      <h2 style="border:none; margin:0;">Impressão de <span style="color:var(--primary);">Endereços</span></h2>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <label style="margin:0;">IP ZEBRA:</label>
+        <input type="text" id="global-ip-end" list="impressoras-lista" placeholder="Ex: 10.0.0.50" style="margin:0; min-width: 150px;">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom: 20px;">
+      <button class="btn btn-secondary active" id="btn-view-padrao" onclick="switchMainAddrView('padrao')" style="border-color:var(--primary); color:var(--primary);">PADRÃO (MZ)</button>
+      <button class="btn btn-secondary" id="btn-view-rk" onclick="switchMainAddrView('rk')">FORMATO RK</button>
+    </div>
+
+    <!-- VIEW PADRÃO -->
+    <div id="view-padrao" class="card addr-main-view">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" onclick="switchAddrTab('padrao-unica', this)">ÚNICA</button>
+        <button class="sub-tab-btn" onclick="switchAddrTab('padrao-lote', this)">EM LOTE</button>
+        <button class="sub-tab-btn" onclick="switchAddrTab('padrao-lista', this)">LISTA</button>
+      </div>
+
+      <div id="padrao-unica" class="addr-sub-view">
+        <label>Endereço Específico</label>
+        <input type="text" id="end-val" placeholder="Ex: MZ-0-125-098-03-01" oninput="this.value = this.value.toUpperCase()">
+        <label>Cópias</label>
+        <input type="number" id="end-copy" value="1" min="1">
+        <button class="btn btn-submit" onclick="processarImpressaoUnica()">IMPRIMIR ÚNICA</button>
+      </div>
+
+      <div id="padrao-lote" class="addr-sub-view" style="display:none;">
+        <div class="grid-2">
+          <div><label>Prefixo</label><input type="text" id="lote-prefixo" value="MZ-0" oninput="this.value = this.value.toUpperCase()"></div>
+          <div><label>Rua</label><input type="number" id="lote-rua" placeholder="Ex: 125"></div>
+        </div>
+        <label>Prédios (De / Até) + Filtro</label>
+        <div class="range-group">
+          <input type="number" id="p-de" placeholder="Início"><span>a</span><input type="number" id="p-ate" placeholder="Fim">
+          <select id="p-filtro" style="padding: 10px;"><option value="todos">Todos</option><option value="pares">Pares</option><option value="impares">Ímpares</option></select>
+        </div>
+        <label>Níveis (De / Até) + Exceções</label>
+        <div class="range-group"><input type="number" id="n-de" placeholder="Início"><span>a</span><input type="number" id="n-ate" placeholder="Fim"><input type="text" id="n-exc" placeholder="Pular: 2, 4..."></div>
+        <label>Aptos (De / Até) + Exceções</label>
+        <div class="range-group"><input type="number" id="a-de" placeholder="Início"><span>a</span><input type="number" id="a-ate" placeholder="Fim"><input type="text" id="a-exc" placeholder="Pular: 3, 5..."></div>
+        <button class="btn btn-submit" onclick="processarImpressaoMassiva()">GERAR & IMPRIMIR LOTE</button>
+      </div>
+
+      <div id="padrao-lista" class="addr-sub-view" style="display:none;">
+        <label>Cole a lista de endereços (MZ-XXX...)</label>
+        <textarea id="lista-val" rows="6" placeholder="MZ-0-125-098-03-01&#10;MZ-0-125-098-03-02" oninput="this.value = this.value.toUpperCase()"></textarea>
+        <button class="btn btn-submit" onclick="processarImpressaoLista()">VALIDAR & IMPRIMIR LISTA</button>
+      </div>
+      <div class="status-msg" id="status-padrao" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
+    </div>
+
+    <!-- VIEW RK -->
+    <div id="view-rk" class="card addr-main-view" style="display:none;">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" onclick="switchAddrTab('rk-unica', this)">ÚNICA</button>
+        <button class="sub-tab-btn" onclick="switchAddrTab('rk-lote', this)">EM LOTE</button>
+        <button class="sub-tab-btn" onclick="switchAddrTab('rk-lista', this)">LISTA</button>
+      </div>
+
+      <div id="rk-unica" class="addr-sub-view">
+        <label>Endereço RK Específico</label>
+        <input type="text" id="rk-val" placeholder="Ex: RK-0-000-000-01-00" oninput="this.value = this.value.toUpperCase()">
+        <label>Cópias</label>
+        <input type="number" id="rk-copy" value="1" min="1">
+        <button class="btn btn-submit" onclick="processarRKUnica()">IMPRIMIR RK</button>
+      </div>
+
+      <div id="rk-lote" class="addr-sub-view" style="display:none;">
+        <div class="grid-2">
+          <div><label>Prefixo + Rua</label><input type="text" id="rk-lote-prefixo" value="RK-0" oninput="this.value = this.value.toUpperCase()"></div>
+          <div><label>Complemento 1</label><input type="text" id="rk-lote-comp1" value="000"></div>
+        </div>
+        <label>Prédio (De / Até) + Filtro</label>
+        <div class="range-group">
+          <input type="number" id="rk-p-de" placeholder="Início"><span>a</span><input type="number" id="rk-p-ate" placeholder="Fim">
+          <select id="rk-p-filtro" style="padding: 10px;"><option value="todos">Todos</option><option value="pares">Pares</option><option value="impares">Ímpares</option></select>
+        </div>
+        <label>Nível (De / Até) + Exceções</label>
+        <div class="range-group"><input type="number" id="rk-n-de" placeholder="Início"><span>a</span><input type="number" id="rk-n-ate" placeholder="Fim"><input type="text" id="rk-n-exc" placeholder="Pular: 2, 4..."></div>
+        <label>Complemento Final (Ex: 00)</label>
+        <input type="text" id="rk-lote-comp2" value="00">
+        <button class="btn btn-submit" onclick="processarRKLote()">GERAR & IMPRIMIR LOTE RK</button>
+      </div>
+
+      <div id="rk-lista" class="addr-sub-view" style="display:none;">
+        <label>Cole a lista de endereços RK</label>
+        <textarea id="rk-lista-val" rows="6" placeholder="RK-0-000-000-01-00&#10;RK-0-000-000-01-01" oninput="this.value = this.value.toUpperCase()"></textarea>
+        <button class="btn btn-submit" onclick="processarRKLista()">IMPRIMIR LISTA RK</button>
+      </div>
+      <div class="status-msg" id="status-rk" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
+    </div>
+  </div>
+
+  <!-- ABA 6: MONITOR DE SOLICITAÇÕES -->
   <div id="tab-monitor" class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap:15px;">
-      <h2 style="border:none; margin:0;">Monitor de <span style="color:var(--blue);">Solicitações Externas</span></h2>
+      <h2 style="border:none; margin:0;">Monitor de <span style="color:var(--blue);">Solicitações</span></h2>
       <div style="display:flex; gap:15px; align-items:center;">
         <button id="btn-sound" class="btn-sound" onclick="monToggleSound()">🔕 Notificação</button>
         <div id="mon-loader" style="color:var(--primary); font-size:12px; font-weight:bold;">Carregando...</div>
@@ -347,8 +454,8 @@
 
   <!-- JAVASCRIPT PRINCIPAL -->
   <script>
-    // PREENCHA COM A URL DO SEU DEPLOY
-    const API_URL = "https://script.google.com/macros/s/AKfycbxckq_ufJBahOl16I6CGgISVFesdjp2Yg-LTtO_GK_t66UaBTvUaTqOz8HZ835CAi_u/exec"; 
+    // URL DEPLOY DO APPS SCRIPT ATUALIZADA
+    const API_URL = "https://script.google.com/macros/s/AKfycbysKdssyZz0MDV56sZLaWPqvtsTfv9TfF5O_d1sK9ur495DCfgrEAelvZrpi3HLx8HJog/exec"; 
     const IS_GITHUB_MODE = (typeof google === 'undefined' || !google.script);
 
     let currentUser = localStorage.getItem('logistic_user') || '';
@@ -424,9 +531,14 @@
 
     function changeTab(tabId) {
       document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('#btn-docas, #btn-buffer-form, #btn-buffer-fila, #btn-etiquetas, #btn-monitor').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
-      document.getElementById('btn-' + tabId).classList.add('active');
+      
+      let buttons = document.querySelectorAll('.nav-btn');
+      buttons.forEach(b => {
+        if(b.getAttribute('onclick') === `changeTab('${tabId}')`) b.classList.add('active');
+      });
+
       if(tabId === 'docas') loadDocas();
       if(tabId === 'buffer-fila') loadSolicitacoes();
       if(tabId === 'monitor') monFetchAndRender();
@@ -532,7 +644,7 @@
     function checkAllChecked(total) { document.getElementById('btn-concluir-modal').style.display = (document.querySelectorAll('#modal-insumos-lista input[type="checkbox"]:checked').length === total && total > 0) ? 'inline-block' : 'none'; }
     async function excluirSolicitacaoAtual() { if(!confirm("Excluir ticket permanentemente?")) return; try { await apiCall('excluirSolicitacao', {linha: solicitacaoAtualLinha}); fecharModal('modal-solicitacao'); loadSolicitacoes(); } catch(e){alert(e);} }
 
-    // ================= ZPL LOTE =================
+    // ================= ZPL LOTE (ORQUESTRAÇÃO SALVAR -> IMPRIMIR) =================
     function maskNumber(el) { let val=el.value.replace(/\D/g,''); if(val) val=parseInt(val,10).toString().replace(/\B(?=(\d{3})+(?!\d))/g,"."); el.value=val; if(el.classList.contains('li-total')||el.classList.contains('lp-qtd')) calcFracionamento(el); }
     function addLoteZplItem() {
       const c = document.getElementById('lote-items-container'), idx = c.querySelectorAll('.lote-item').length + 1;
@@ -577,7 +689,6 @@
       return { texto: l.slice(0,6).join('\n'), fontSize: Math.min(fs, Math.floor(1300/Math.max(...l.map(x=>x.length)))), posY: 445 + Math.floor((430 - ((fs*l.length)+((l.length-1)*10)))/2), posX:0, fbWidth:800 };
     }
 
-    // A MÁGICA DE IMPRESSÃO - PRIMEIRO BANCO, DEPOIS IMPRESSORA!
     async function processarImpressaoLote() {
       if(contadorDeImpressoes >= LIMITE_IMPRESSOES) return document.getElementById('overlay-block').style.display = 'flex';
       
@@ -623,14 +734,14 @@
             aloc += (nq*cq); valids++;
             for(let c=0; c<(printPID?cq:1); c++) {
               let cpCount = printPID ? 1 : cq;
-              
               let pid = "-";
+              
               if (printPID) {
                  const l="ABCDEFGHIJKLMNOPQRSTUVWXYZ", n="0123456789";
                  let p1 = (pref && pref.length>=2) ? pref[0] : l[Math.floor(Math.random()*26)];
                  let p2 = (pref && pref.length>=2) ? pref[1] : l[Math.floor(Math.random()*26)];
                  do { pid = p1+p2+n[Math.floor(Math.random()*10)]+n[Math.floor(Math.random()*10)]+l[Math.floor(Math.random()*26)]+n[Math.floor(Math.random()*10)];
-                 } while (palletIdsGlobais.has(pid));
+                 } while (palletIdsGlobais.has(pid)); // LAÇO QUE GARANTE A SEGURANÇA CONTRA REPETIÇÃO
                  palletIdsGlobais.add(pid);
               }
               
@@ -664,9 +775,142 @@
       }
     }
 
+    // ================= ENDEREÇOS (MZ / RK) =================
+    function switchMainAddrView(view) {
+      document.getElementById('view-padrao').style.display = view === 'padrao' ? 'block' : 'none';
+      document.getElementById('view-rk').style.display = view === 'rk' ? 'block' : 'none';
+      document.getElementById('btn-view-padrao').style.cssText = view === 'padrao' ? 'border-color:var(--primary); color:var(--primary);' : '';
+      document.getElementById('btn-view-rk').style.cssText = view === 'rk' ? 'border-color:var(--primary); color:var(--primary);' : '';
+      document.querySelectorAll('.status-msg').forEach(el => el.innerHTML = "");
+    }
+
+    function switchAddrTab(viewId, btn) {
+      const container = btn.closest('.card');
+      container.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      container.querySelectorAll('.addr-sub-view').forEach(v => v.style.display = 'none');
+      document.getElementById(viewId).style.display = 'block';
+    }
+
+    async function sendToZebraAddr(zpl, statusId, onSuccess) {
+      const ip = document.getElementById('global-ip-end').value.trim();
+      if (!ip) return showMsg(statusId, "⚠️ Informe o IP da impressora no topo da página", "var(--danger)");
+      showMsg(statusId, "⏳ Enviando para a impressora...", "var(--primary)");
+      try {
+        await fetch(`http://${ip}:9100/pstprnt`, { method: 'POST', mode: 'no-cors', body: zpl });
+        showMsg(statusId, "✅ Impressão enviada!", "var(--success)");
+        if (onSuccess) onSuccess();
+      } catch (error) {
+        showMsg(statusId, "❌ Erro de rede. Verifique o IP e sua conexão.", "var(--danger)");
+      }
+    }
+
+    function parseExcecoes(texto) { return !texto ? [] : texto.split(',').map(item => parseInt(item.trim())).filter(n => !isNaN(n)); }
+
+    function gerarZPL_Padrao(rua, predio, nivel, apto, enderecoCompleto, copias) {
+      let zpl = "^XA^CI28^FO50,30^GB180,90,90^FS^FO50,40^A0N,30,30^FR^FB180,1,0,C^FDRUA^FS^FO50,70^A0N,55,55^FR^FB180,1,0,C^FD" + rua + "^FS^FO320,30^GB180,90,90^FS^FO320,40^A0N,30,30^FR^FB180,1,0,C^FDNÍVEL^FS^FO320,70^A0N,55,55^FR^FB180,1,0,C^FD" + nivel + "^FS^FO590,30^GB180,90,90^FS^FO590,40^A0N,30,30^FR^FB180,1,0,C^FDAPTO^FS^FO590,70^A0N,55,55^FR^FB180,1,0,C^FD" + apto + "^FS^FO50,140^A0N,35,35^FB450,1,0,C^FDPRÉDIO^FS";
+      let charWidth = 250, charHeight = 270;
+      zpl += "^FO15,185^A0N," + charHeight + "," + charWidth + "^FB490,1,0,C^FD" + predio + "^FS^FO18,185^A0N," + charHeight + "," + charWidth + "^FB490,1,0,C^FD" + predio + "^FS^FO15,188^A0N," + charHeight + "," + charWidth + "^FB490,1,0,C^FD" + predio + "^FS^FO18,188^A0N," + charHeight + "," + charWidth + "^FB490,1,0,C^FD" + predio + "^FS^FO16,186^A0N," + charHeight + "," + charWidth + "^FB490,1,0,C^FD" + predio + "^FS";
+      zpl += "^FO540,140^BQN,2,8^FDQA," + enderecoCompleto + "^FS^FO450,365^A0N,30,30^FD" + enderecoCompleto + "^FS^PQ" + copias + ",0,1,Y^XZ";
+      return zpl;
+    }
+
+    function processarImpressaoUnica() {
+      const endereco = document.getElementById('end-val').value.trim(); const copias = document.getElementById('end-copy').value || 1;
+      if (!/^[A-Z]{2}-\d-\d{3}-\d{3}-\d{2}-\d{2}$/.test(endereco)) return showMsg('status-padrao', '⚠️ Padrão inválido. Use: XX-0-000-000-00-00', 'var(--danger)');
+      const p = endereco.split('-'); const zpl = gerarZPL_Padrao(p[2], p[3], p[4], p[5], endereco, copias);
+      sendToZebraAddr(zpl, 'status-padrao', () => { document.getElementById('end-val').value = ''; });
+    }
+
+    function processarImpressaoMassiva() {
+      const prefixo = document.getElementById('lote-prefixo').value.trim() || "MZ-0";
+      const rua = parseInt(document.getElementById('lote-rua').value), pDe = parseInt(document.getElementById('p-de').value), pAte = parseInt(document.getElementById('p-ate').value);
+      const pFiltro = document.getElementById('p-filtro').value, nDe = parseInt(document.getElementById('n-de').value), nAte = parseInt(document.getElementById('n-ate').value);
+      const excNiveis = parseExcecoes(document.getElementById('n-exc').value), aDe = parseInt(document.getElementById('a-de').value), aAte = parseInt(document.getElementById('a-ate').value);
+      const excAptos = parseExcecoes(document.getElementById('a-exc').value);
+
+      if (isNaN(rua) || isNaN(pDe) || isNaN(pAte) || isNaN(nDe) || isNaN(nAte) || isNaN(aDe) || isNaN(aAte)) return showMsg('status-padrao', '⚠️ Preencha os campos numéricos', 'var(--danger)');
+      if (pDe > pAte || nDe > nAte || aDe > aAte) return showMsg('status-padrao', '⚠️ "Início" não pode ser maior que "Fim"', 'var(--danger)');
+
+      let enderecosGerados = []; const strRua = String(rua).padStart(3, '0');
+      for (let p = pDe; p <= pAte; p++) {
+        if (pFiltro === 'pares' && p % 2 !== 0) continue; if (pFiltro === 'impares' && p % 2 === 0) continue;
+        for (let n = nDe; n <= nAte; n++) {
+          if (excNiveis.includes(n)) continue;
+          for (let a = aDe; a <= aAte; a++) {
+            if (excAptos.includes(a)) continue;
+            let full = `${prefixo}-${strRua}-${String(p).padStart(3, '0')}-${String(n).padStart(2, '0')}-${String(a).padStart(2, '0')}`;
+            enderecosGerados.push({ rua: strRua, predio: String(p).padStart(3, '0'), nivel: String(n).padStart(2, '0'), apto: String(a).padStart(2, '0'), full: full });
+          }
+        }
+      }
+      if (enderecosGerados.length === 0) return showMsg('status-padrao', '⚠️ Nenhuma etiqueta sobrou com esses filtros', 'var(--danger)');
+      if (enderecosGerados.length > 500) return showMsg('status-padrao', `⚠️ Lote muito grande (${enderecosGerados.length}). Máximo: 500.`, 'var(--danger)');
+      if (!confirm(`ATENÇÃO: Serão impressas ${enderecosGerados.length} etiquetas.\nDeseja continuar?`)) return;
+
+      let loteZPL = ""; enderecosGerados.forEach(end => { loteZPL += gerarZPL_Padrao(end.rua, end.predio, end.nivel, end.apto, end.full, 1); });
+      sendToZebraAddr(loteZPL, 'status-padrao');
+    }
+
+    function processarImpressaoLista() {
+      const linhas = document.getElementById('lista-val').value.toUpperCase().split(/[\n,;]+/).map(l => l.trim()).filter(l => l !== '');
+      if (linhas.length === 0) return showMsg('status-padrao', '⚠️ Cole pelo menos um endereço', 'var(--danger)');
+      let validos = [], invalidos = [];
+      linhas.forEach(linha => /^[A-Z]{2}-\d-\d{3}-\d{3}-\d{2}-\d{2}$/.test(linha) ? validos.push(linha) : invalidos.push(linha));
+      if (validos.length === 0) return showMsg('status-padrao', '❌ Nenhum endereço válido no padrão MZ', 'var(--danger)');
+      if (!confirm(`Encontrados ${validos.length} válidos.${invalidos.length > 0 ? `\n⚠️ ${invalidos.length} linhas ignoradas.` : ''}\n\nDeseja imprimir?`)) return;
+
+      let loteZPL = ""; validos.forEach(end => { const p = end.split('-'); loteZPL += gerarZPL_Padrao(p[2]||"000", p[3]||"000", p[4]||"00", p[5]||"00", end, 1); });
+      sendToZebraAddr(loteZPL, 'status-padrao', () => { document.getElementById('lista-val').value = ''; });
+    }
+
+    function gerarZPL_RK(enderecoRK, copias) {
+      const partes = enderecoRK.split('-'); let nivel = partes.length >= 5 ? partes[4] : "00";
+      return `^XA^PW815^CI28\n^FO50,120^A0N,130,120^FDNÍVEL ${nivel}^FS\n^FO530,30^BQN,2,10^FDQA,${enderecoRK}^FS\n^FO0,300^GB815,106,106^FS\n^FO20,320^A0N,80,65^FR^FB795,1,0,C^FD${partes.join('-')}^FS\n^PQ${copias},0,1,Y^XZ\n`;
+    }
+
+    function processarRKUnica() {
+      const endereco = document.getElementById('rk-val').value.trim(), copias = document.getElementById('rk-copy').value || 1;
+      if (!endereco) return showMsg('status-rk', '⚠️ Digite o endereço RK', 'var(--danger)');
+      sendToZebraAddr(gerarZPL_RK(endereco, copias), 'status-rk', () => { document.getElementById('rk-val').value = ''; });
+    }
+
+    function processarRKLote() {
+      const prefixo = document.getElementById('rk-lote-prefixo').value.trim() || "RK-0", comp1 = document.getElementById('rk-lote-comp1').value.trim() || "000";
+      const pDe = parseInt(document.getElementById('rk-p-de').value), pAte = parseInt(document.getElementById('rk-p-ate').value);
+      const pFiltro = document.getElementById('rk-p-filtro').value, nDe = parseInt(document.getElementById('rk-n-de').value), nAte = parseInt(document.getElementById('rk-n-ate').value);
+      const excNiveis = parseExcecoes(document.getElementById('rk-n-exc').value), comp2 = document.getElementById('rk-lote-comp2').value.trim() || "00";
+
+      if (isNaN(pDe) || isNaN(pAte) || isNaN(nDe) || isNaN(nAte)) return showMsg('status-rk', '⚠️ Preencha os campos numéricos', 'var(--danger)');
+      if (pDe > pAte || nDe > nAte) return showMsg('status-rk', '⚠️ "Início" não pode ser maior que "Fim"', 'var(--danger)');
+
+      let enderecosGerados = [];
+      for (let p = pDe; p <= pAte; p++) {
+        if (pFiltro === 'pares' && p % 2 !== 0) continue; if (pFiltro === 'impares' && p % 2 === 0) continue;
+        for (let n = nDe; n <= nAte; n++) {
+          if (excNiveis.includes(n)) continue;
+          enderecosGerados.push(`${prefixo}-${comp1}-${String(p).padStart(3, '0')}-${String(n).padStart(2, '0')}-${comp2}`);
+        }
+      }
+      if (enderecosGerados.length === 0) return showMsg('status-rk', '⚠️ Nenhuma etiqueta sobrou', 'var(--danger)');
+      if (enderecosGerados.length > 500) return showMsg('status-rk', `⚠️ Lote muito grande (${enderecosGerados.length}). Máximo: 500.`, 'var(--danger)');
+      if (!confirm(`ATENÇÃO: Serão impressas ${enderecosGerados.length} etiquetas RK.\nDeseja continuar?`)) return;
+
+      let loteZPL = ""; enderecosGerados.forEach(end => { loteZPL += gerarZPL_RK(end, 1); });
+      sendToZebraAddr(loteZPL, 'status-rk');
+    }
+
+    function processarRKLista() {
+      const linhas = document.getElementById('rk-lista-val').value.toUpperCase().split(/[\n,;]+/).map(l => l.trim()).filter(l => l !== '');
+      if (linhas.length === 0) return showMsg('status-rk', '⚠️ Cole a lista de endereços RK', 'var(--danger)');
+      if (!confirm(`Imprimir ${linhas.length} endereços RK?`)) return;
+
+      let loteZPL = ""; linhas.forEach(end => { loteZPL += gerarZPL_RK(end, 1); });
+      sendToZebraAddr(loteZPL, 'status-rk', () => { document.getElementById('rk-lista-val').value = ''; });
+    }
 
     // =======================================================
-    // MONITOR EXTERNO (INTEGRAÇÃO DA PLANILHA EXTERNA)
+    // MONITOR DE SOLICITAÇÕES
     // =======================================================
     let monRawData = [];
     let monCurrentTab = 'Hoje';
@@ -724,6 +968,12 @@
       try {
         loader.innerText = 'Buscando dados...'; loader.style.color = 'var(--primary)';
         let data = await apiCall('getDashboardData');
+        
+        if (data && data.length > 0 && data[0].error) {
+           loader.innerText = 'Erro do Servidor: ' + data[0].error; 
+           loader.style.color = 'var(--danger)'; 
+           return;
+        }
         
         let newDataString = JSON.stringify(data);
         if (newDataString !== JSON.stringify(monRawData)) {
